@@ -1,0 +1,57 @@
+<aura:component controller="dynamicWizardAdmin" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global">
+    <aura:attribute name="errorMessage" type="String"/>	
+    <aura:attribute name="cmpNavigationList" type="String[]"/>
+    <aura:attribute name="templateId" type="string"/>
+    <aura:attribute name="userChoice" type="String" default=""/> 
+    <aura:attribute name="userChoiceBoolean" type="boolean" default=""/>   
+    <aura:attribute name="templateList" type="List" />
+    <aura:attribute name="templateColumnsList" type="List" access="public"/>
+    <aura:attribute name="templateTableConfigurationMap" type="Map" access="public"/>
+    <aura:attribute name="sfObjectsList" type="getSfObjectsList"/>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:handler name="dtActionClick" event="ldt:clickedDtAction" action="{!c.templateActionClicked}"/>
+    <lightning:spinner variant="brand" size="large" aura:id="spinner"/>   
+    <!-- Page Header Starts-->
+    <div aura:id="header" class="slds-page-header" >
+        <div class="slds-media">
+            <div class="slds-media__figure">
+                <span class="slds-icon_container slds-icon-standard-opportunity" title="Description of icon when needed">
+                    <lightning:icon iconName="custom:custom51" size="medium" alternativeText="Indicates approval"/>
+                </span>
+            </div>
+            <div class="slds-media__body">
+                <div class="slds-grid">
+                    <div class="slds-col">
+                        <h1 class="slds-page-header__title slds-truncate slds-align-middle" title="Admin - Services">
+                            <a href="javascript:void(0);" onclick="{!c.navigateToHomePage}">
+                                Wizard Admin Services
+                            </a>
+                            
+                        </h1>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Page Header Ends-->   
+    
+    <div class="slds-media__body">
+        <div class="slds"> 
+            <div class="hideElement" aura:id="templateLists"> 
+                <section class="project-task-list slds-p-top--x-small">
+                    <div class="task-list slds-p-top--medium">
+                        <ldt:datatableDev title="Template Details" aura:id="templateListTable" dataRows="{!v.templateList}" header="{!v.templateColumnsList}" config="{!v.templateTableConfigurationMap}"/>        
+                    </div>       
+                </section>
+                <div name="divBtnsSave" class="slds-button-group slds-grid slds-grid_align-center" role="group">
+                    <button class="slds-button slds-button_neutral" onclick="{!c.goToPrevious}">Back</button>                    
+                </div>	
+            </div>            
+        </div>        
+    </div>
+    
+    <div>
+        {!v.body}
+    </div>
+    
+</aura:component>

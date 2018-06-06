@@ -1,0 +1,55 @@
+<aura:component controller="dynamicWizard" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global">
+    
+    <aura:handler name="init" value="{!this}" action="{!c.subTabOnLoad}"/>
+    
+    <aura:attribute name="tabId" type="string" />
+    <aura:attribute name="tabName" type="string" />
+    <aura:attribute name="subTabId" type="String"/>
+    <aura:attribute name="subTabName" type="String"/>
+    <aura:attribute name="prevSubTabName" type="String"/>
+    <aura:attribute name="prevSubTabId" type="String"/>    
+    <aura:attribute name="validationError" type="Boolean" default="false"/>
+	<aura:attribute name="metaDataMap" type="map"/>
+    <aura:attribute name="tabsSubTabsMap" type="map"/>
+    <aura:attribute name="dependentSubtabsConditionsMap" type="map" default=""/>
+    <aura:attribute name="draftSubTabIdName" type="Map"/>    
+    <aura:attribute name="depQuestionsConditionsMapMaster" type="map" default=""/>    
+    <aura:attribute name="questionsProfileSetttingsMap" type="map" default=""/>
+    <aura:attribute name="subTabList" type="list"/>    
+    <aura:attribute name="conditionalOperationsArray" type="list"/>
+    <aura:attribute name="questionsComponent" type="Object" />
+    <aura:attribute name="questionsComponentId" type="String"/>
+    <aura:attribute name="errorMessage" type="string" default=""/>
+    <aura:attribute name="questionsList" type="list"/>
+    <aura:attribute name="userProfile" type="String"/>
+    <aura:attribute name="saveAsDraftMap" type="map"/>
+    <aura:attribute name="onLoad" type="String"/>    
+    <lightning:spinner variant="brand" size="large" aura:id="spinner" class="slds-hide"/>
+        
+    <aura:registerEvent name="tabSubTabUpdateEvent" type="c:tabSubTabUpdateEvent"/>
+    <aura:handler name="dataCommuEvnt" event="c:dataCommuEvent" action="{!c.TabChangeEvnt}"/>    
+    <aura:handler name="conditionalDependencyEvent" event="c:conditionalDependencyEvent" action="{!c.loadDependentSubtabs}"/>
+    
+    <aura:method name="invokeSubTabs" action="{!c.invokeQuestionsForm}">
+        <aura:attribute name="isGlobalTab" type="Boolean" default="false"/>
+        <aura:attribute name="isSubTab" type="Boolean" default="false"/>        
+        <aura:attribute name="saveAsDraft" type="Boolean" default="false"/>
+        <aura:attribute name="globalSave" type="Boolean" default="false"/>
+        <aura:attribute name="tabsSubTabsMap" type="map"/>
+    </aura:method>
+    <c:comparatorCmp aura:id="comparatorCmp"/>
+    <c:evaluateFinalConditionCmp aura:id="evaluateFinalConditionCmp"/>    
+    <div>
+        <lightning:tabset selectedTabId="{!v.draftSubTabIdName}">
+            <aura:iteration items="{!v.subTabList}" var="subTab">
+                <aura:if isTrue="{!and(subTab.Has_Condition__c == false,subTab.profileMatch == true)}">                             
+                    <lightning:tab label="{!subTab.SubTab__c}" id="{!subTab.NewId}"  onactive="{!c.changeSubTab}">                
+                	</lightning:tab>   
+                </aura:if>
+            </aura:iteration>
+        </lightning:tabset>
+    </div>
+     <div>
+        {!v.body}
+    </div>
+</aura:component>

@@ -1,0 +1,26 @@
+.THIS {
+    background-color: rgb(255, 255, 255);
+}
+
+.THIS .unhideElement {
+    display:block;
+}
+
+.THIS .hideElement {
+    display:none;
+}
+
+.THIS .ldtdev .slds-card {
+    background: #fff;
+}
+
+.THIS {
+      background-color: rgb(255, 255, 255);
+}
+
+.THIS .sectionHeader{
+    padding-top:0.2rem;
+    padding-bottom:0.2rem;
+	background: rgb(243, 242, 242);
+    font-size: 1rem;
+}

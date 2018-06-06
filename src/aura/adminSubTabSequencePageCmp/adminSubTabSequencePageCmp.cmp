@@ -1,0 +1,76 @@
+<aura:component controller="dynamicWizardAdmin" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global">
+    
+    <!--Start Back scenario-->
+    <aura:attribute name="cmpInvocationStack" type="String[]"/>    
+    <aura:attribute name="templateId" type="String" default=""/>
+    <!--End Back scenario-->    
+    
+    <!--Tab Details fields-->
+    <aura:attribute name="tabId" type="String"/>
+    <aura:attribute name="tabList" type="List" />
+    <!--Sub Tab Datatable-->
+    <aura:attribute name="subTabId" type="string" />
+    <aura:attribute name="subTabList" type="List" />
+    <aura:attribute name="subTabSequenceList" type="List" />
+    <aura:attribute name="bropped" type="boolean" default="true" />
+    <aura:handler name="change" value="{!v.bropped}" action="{!c.upDateSequence}"/>
+    
+     <ltng:require afterScriptsLoaded="{!c.scriptLoaded}" scripts="{!join(',',
+                                                                  $Resource.Jquery,
+                                                                  $Resource.JqueryTheme
+                                                                  )}"/>
+      
+ <div class="unhideElement" aura:id="subtabSequence">
+      <div class="headerSection slds-p-bottom_small slds-border_bottom">
+        <h2 class="title slds-text-heading--medium slds-text-align_center" id="titleNewTab">Subtab List</h2>
+    </div> 
+     <!--Loading Tab details as picklist-->
+     <div class="contentSection  slds-grid--vertical">
+             <div class="tabDetailsSection slds-grid slds-grid--vertical">                 
+                 <div class="slds-box">
+                     <div class="slds-grid slds-size_1-of-1">
+                       <div class="dataTabs slds-grid slds-size--1-of-3 slds-align_absolute-center">                		
+                           <lightning:select name="Tabs" label="Select a Tab:" aura:id="tabListSelect" onchange="{!c.handleTabChange}">
+                                  <option text="--None--" value="--None--"/>
+                                 <aura:iteration items="{!v.tabList}" var="item">
+                                     <option text="{!item.Tab_Name__c}" value="{!item.Id}"/>
+                                 </aura:iteration>
+                             </lightning:select>                             
+                         </div>
+                     </div>
+                 </div>
+         </div>
+     </div>
+    
+    <table id="sortable" class="subTabsDt slds-table slds-table_bordered slds-table_cell-buffer">
+    <thead>
+      <!--<tr class="slds-text-heading-label">-->
+        <th scope="col" style= "display:none"><div class="slds-truncate subTabsTHead" title="ID" >ID</div></th>
+        <th scope="col"><div class="slds-truncate subTabsTHead" title="Sub Tab Name">Sub Tab Name</div></th>
+       
+        <th scope="col"><div class="slds-truncate subTabsTHead" title="Sequence">Sequence</div></th>
+      <!--</tr>-->
+    </thead>
+  
+      <!-- Use the Apex model and controller to fetch server side data -->
+      <aura:iteration items="{!v.subTabSequenceList}" var="subtabs">
+        <tr class="slds-line-height_reset" style="cursor:pointer">
+          <td id="subTab_id" scope="row" style= "display:none"><div class="slds-truncate" title="{!subtabs.Id}">{!subtabs.Id}</div></td>
+          <td  class="ui-icon ui-icon-arrowthick-2-n-s demo subTabsTd"><div class="slds-truncate" title="{!subtabs.SubTab__c}">{!subtabs.SubTab__c}</div></td>
+          <td style= "display:none" class="ui-icon ui-icon-arrowthick-2-n-s"><div class="slds-truncate" title="{!subtabs.Tabs__r.Name}">{!subtabs.Tabs__r.Tab_Name__c}</div></td>
+          <td class="ui-icon ui-icon-arrowthick-2-n-s subTabsTd"><div class="slds-truncate" title="{!subtabs.Sequence__c}">{!subtabs.Sequence__c}</div></td>
+          
+        </tr>
+      </aura:iteration>
+   
+  </table>
+    <div name="divBtnsSave" class="slds-button-group slds-grid slds-grid_align-center" role="group">
+    <lightning:button variant="neutral" label="Back" onclick="{!c.goToPrevious}"/>
+      
+     </div> 
+     </div>   
+     <div>
+        {!v.body}
+    </div>
+    
+</aura:component>

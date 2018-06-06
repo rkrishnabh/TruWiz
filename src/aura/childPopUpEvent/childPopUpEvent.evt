@@ -1,0 +1,3 @@
+<aura:event type="APPLICATION" description="Child PopUp Event" >
+    <aura:attribute name="metaDataMap" type="map"/>
+</aura:event>

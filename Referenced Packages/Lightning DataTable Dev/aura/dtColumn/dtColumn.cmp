@@ -1,0 +1,29 @@
+<aura:component access="public">
+    <aura:attribute name="sortColumn" type="String" access="public"/>
+    <aura:attribute name="sortOrder" type="String" access="public"/>
+    <aura:attribute name="column" type="Map" access="public"/>
+    <aura:attribute name="_width" type="String" access="public" default=""/>
+
+    <aura:registerEvent name="sortColumnByEvt" type="ldt:sortColumnBy"/>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:handler event="ldt:doneSortingColumn" action="{!c.doneSorting}"/>
+    
+    <th aura:id="colCmp" scope="col" title="{!v.column.label}" class="col slds-truncate slds-is-sortable thAlign" width="{!v._width}" onclick="{!c.sort}">
+        <a class="toggle slds-th__action slds-text-link--reset">
+          <span class="slds-assistive-text">Sort </span>
+          <span class="slds-truncate" title="{!v.column.label}">{!v.column.label}</span>
+          <span class="slds-assistive-text" aria-live="assertive" aria-atomic="true">Sorted ascending</span>
+        </a>
+        
+        <aura:if isTrue="{!v.column.resizeable}">
+        	<div class="slds-resizable">
+                <label class="slds-assistive-text">{!v.column.label} column width</label>
+                <input class="slds-resizable__input slds-assistive-text" type="range" min="20" max="1000" />
+                <span class="{!$Browser.formFactor == 'DESKTOP' ? 'slds-resizable__handle' : 'resizehandle'}">
+                    <span class="{!$Browser.formFactor == 'DESKTOP' ? 'slds-resizable__divider' : 'resizedivider'}" >  
+                    </span>
+                </span>
+            </div>
+        </aura:if>
+    </th>
+</aura:component>

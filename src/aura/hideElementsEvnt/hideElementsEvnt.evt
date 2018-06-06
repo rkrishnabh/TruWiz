@@ -1,0 +1,4 @@
+<aura:event type="COMPONENT" access="global">
+    <aura:attribute name="auraIdListToHide" type="List"/>
+    <aura:attribute name="eventExecuted" default="false" type="String"/>
+</aura:event>

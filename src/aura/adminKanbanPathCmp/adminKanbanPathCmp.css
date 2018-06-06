@@ -1,0 +1,15 @@
+.THIS {
+    background-color: rgb(255, 255, 255);
+}
+
+.THIS.slds-page-header{
+    background-color: rgb(243, 242, 242);
+}
+
+.THIS .slds-path__nav .slds-is-incomplete+.slds-is-current:before {
+    background-color: rgb(236, 235, 234);
+}
+ 
+.THIS .slds-path__nav .slds-is-incomplete+.slds-is-current:before {
+    background-color: rgb(236, 235, 234);
+}

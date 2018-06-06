@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomLabels xmlns="http://soap.sforce.com/2006/04/metadata">
+    <labels>
+        <fullName>Action_Column</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Action Column Label</shortDescription>
+        <value>Action</value>
+    </labels>
+    <labels>
+        <fullName>Items_Per_Page</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Item Menu Label</shortDescription>
+        <value>Items Per Page</value>
+    </labels>
+    <labels>
+        <fullName>Page_Next</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Pagination Next Label</shortDescription>
+        <value>Next</value>
+    </labels>
+    <labels>
+        <fullName>Page_Prev</fullName>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>Pagination Previous Label</shortDescription>
+        <value>Previous</value>
+    </labels>
+    <labels>
+        <fullName>Pagination_Info</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Pagination Info Label</shortDescription>
+        <value>Showing {0} to {1} of {2} records</value>
+    </labels>
+    <labels>
+        <fullName>Search</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Search Box Label</shortDescription>
+        <value>Search</value>
+    </labels>
+    <labels>
+        <fullName>Search_By_Column</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Search By Column Label</shortDescription>
+        <value>Search by Column</value>
+    </labels>
+    <labels>
+        <fullName>Select_All</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Select All Label for Mobile</shortDescription>
+        <value>Select All</value>
+    </labels>
+</CustomLabels>

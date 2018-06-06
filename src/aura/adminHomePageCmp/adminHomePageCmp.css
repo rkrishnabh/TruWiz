@@ -1,0 +1,107 @@
+.THIS {
+    background-color: rgb(255, 255, 255);
+}
+
+.THIS .slds-form-element__legend{
+    font-size: 1rem;
+    line-height: 1.25;
+    color: rgb(0, 112, 210);
+}
+
+.THIS .slds-radio span.slds-form-element__label{
+    color: rgb(22, 50, 92);
+}
+.THIS .anchorStyle{
+    text-decoration: none;
+    display:block;
+    padding:1rem;
+}
+
+/*.THIS .optionLayoutItem{
+float:left;
+}*/
+
+.THIS .optionLayoutItem.slds-box{
+    padding:0px;
+}
+.THIS .tileUiBlock{
+    padding: 0px;
+    background: rgb(243, 242, 242);    
+}
+.THIS .tileUiBlock:hover{
+    box-shadow:0 0 20px rgba(0,0,0,0.8);
+}
+
+.THIS .tileUiBlock .bLeft {
+    height: 96px;
+    width: 96px;
+    min-width: 96px;
+    background: white;
+    position: relative;
+    border-radius: .25rem;
+}
+
+.THIS .tileUiBlock .bRight {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding-right: 1rem;
+    padding-bottom: 1rem;
+    padding-left: 1rem;
+    padding-top: 1rem;
+    text-align: left;
+    height: 96px;
+    -o-text-overflow: ellipsis;
+    position: relative;
+    float: left;
+    width: auto;
+}
+
+.THIS .slds-icon--large {
+    width: 5rem;
+    height: 5rem;
+}
+
+.THIS .appTileTitle {
+    font-size: 12pt;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: rgb(0, 112, 210);
+}
+
+.THIS .fullDescription{
+    text-align: left;
+    max-height: inherit;
+    white-space: normal;
+    overflow: hidden;
+    position: relative;
+    color: black;
+    font-size: 10pt;
+    font-weight: 400;    
+}
+
+.THIS .slds-grid--align-space{
+    justify-content: left;
+}
+
+/*Float Method*/
+.THIS .tileUiBlock .bLeft {
+    width:25%;   
+}
+
+.THIS .tileUiBlock .bRight {
+    width:75%;      
+}
+
+.THIS.greetMsg{
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: rgb(0, 112, 210);
+    padding:0.7rem;
+    text-align: center;
+    font-size: 1.125rem;
+    font-weight: 700;
+    line-height: 1.25;    
+}

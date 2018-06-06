@@ -1,0 +1,89 @@
+<aura:component controller="dynamicWizardAdmin" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global">
+    
+    <!--Start Back scenario-->
+    <aura:attribute name="cmpInvocationStack" type="String[]"/> 
+    <aura:attribute name="userChoice" type="String" default=""/>    
+    <aura:attribute name="sfObjectsList" type="getSfObjectsList"/>  
+    <aura:attribute name="selectedSubTabId" type="string" /> 
+    <aura:attribute name="templateId" type="string" default=""/>
+    <aura:attribute name="tabId" type="String"/> 
+    <aura:attribute name="tabList" type="List" />
+    <aura:attribute name="subTabId" type="string" />
+    <aura:attribute name="subTabList" type="List" />
+   
+    <!--Template Datatable-->
+    <aura:attribute name="templateIdClone" type="string" default=""/>
+    <aura:attribute name="templateList" type="List" />
+    <!--Tab Details fields-->
+    <aura:attribute name="tabIdClone" type="String"/> 
+    <aura:attribute name="tabListClone" type="List" />
+    
+    <!--Sub Tab Datatable-->
+    <aura:attribute name="subTabIdClone" type="string" />
+    <aura:attribute name="subTabListClone" type="List" />
+    
+    <!--Questions Datatable-->
+    <aura:attribute name="questionsList" type="List" />
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:attribute name="bropped" type="boolean" default="true" />
+    <aura:handler name="change" value="{!v.bropped}" action="{!c.upDateSequence}"/>
+    <ltng:require afterScriptsLoaded="{!c.scriptLoaded}" scripts="{!join(',',
+                                                                  $Resource.Jquery,
+                                                                  $Resource.JqueryTheme
+                                                                  )}"/>
+    
+    <div class="unhideElement" aura:id="questionSequence">     
+        <div class="headerSection slds-p-bottom_small slds-border_bottom">
+            <h2 class="title slds-text-heading--medium slds-text-align_center" id="titleNewTab">Questions List</h2>
+        </div>  
+        
+        <div class="contentSection  slds-grid--vertical">
+            <div class="tabDetailsSection slds-grid slds-grid--vertical">                 
+                <div class="slds-grid slds-size_1-of-1">
+                    <div class="dataTabs slds-grid slds-size--1-of-3 slds-align_absolute-center">                		
+                        <lightning:select name="Tabs" label="Select a Tab:" aura:id="tabListSelect" onchange="{!c.handleTabChange}">
+                            <aura:iteration items="{!v.tabListClone}" var="item">
+                                <option  value="">--None--</option>
+                                <option text="{!item.Tab_Name__c}" value="{!item.Id}"/>
+                            </aura:iteration>
+                        </lightning:select>                             
+                    </div>             
+                    <div class="dataSubTabs slds-grid slds-size--1-of-3 slds-align_absolute-center">
+                        <lightning:select name="SubTabs" label="Select a Sub Tab:" aura:id="subTabListSelect" onchange="{!c.handleSubTabChange}">
+                            <option  value="">--None--</option>
+                            <aura:iteration items="{!v.subTabListClone}" var="item">
+                                <option text="{!item.SubTab__c}" value="{!item.Id}"/>
+                            </aura:iteration>
+                        </lightning:select>                             
+                    </div>                    
+                </div>
+            </div>
+        </div> 
+        <table id="sortable" class="questionsDt slds-table slds-table_bordered slds-table_cell-buffer">
+            <thead>
+                <th scope="col" style= "display:none"><div class="slds-truncate questionsTHead" title="ID" >ID</div></th>
+                <th scope="col"><div class="slds-truncate questionsTHead" title="Sub Tab Name ">Question Name</div></th>
+                <th scope="col"><div class="slds-truncate questionsTHead" title="Sequence">Sequence</div></th>
+            </thead>
+            
+            <!-- Use the Apex model and controller to fetch server side data -->
+            <aura:iteration items="{!v.questionsList}" var="questions">
+                <tr class="slds-line-height_reset" style="cursor:pointer">
+                    <td id="question_id" scope="row" style= "display:none"><div class="slds-truncate" title="{!questions.Id}">{!questions.Id}</div></td>
+                    <td  class="ui-icon ui-icon-arrowthick-2-n-s demo questionsTd"><div class="slds-truncate" title="{!questions.Question_Label__c}">{!questions.Question_Label__c}</div></td>
+                    
+                    <td class="ui-icon ui-icon-arrowthick-2-n-s questionsTd"><div class="slds-truncate" title="{!questions.Sequence__c}">{!questions.Sequence__c}</div></td>
+                    
+                </tr>
+            </aura:iteration>
+            
+        </table>
+        <div name="divBtnsSave" class="slds-button-group slds-grid slds-grid_align-center slds-m-top_small" role="group">
+            <button class="slds-button slds-button_neutral" onclick="{!c.goToPrevious}">Back</button> 
+            
+        </div>
+    </div>
+    <div>
+        {!v.body}
+    </div>        
+</aura:component>

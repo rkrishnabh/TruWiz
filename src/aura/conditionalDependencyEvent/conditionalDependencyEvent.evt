@@ -1,0 +1,8 @@
+<aura:event type="COMPONENT" description="Event template" >
+    <aura:attribute name="selectedQuestionId" type="String"/>
+    <aura:attribute name="selectedAnswer" type="String"/>    
+    <aura:attribute name="dependentTab" type="Boolean"/>
+    <aura:attribute name="dependentSubtab" type="Boolean"/>    
+    <aura:attribute name="dependentQuestion" type="Boolean"/>
+    <aura:attribute name="metaDataMap" type="map"/>
+</aura:event>

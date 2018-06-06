@@ -1,0 +1,122 @@
+<aura:component controller="dynamicWizard" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global">    
+    <aura:handler name="init" value="{!this}" action="{!c.globalTabOnLoad}"/>        
+    <aura:attribute name="recordId" type="Id" />
+    <aura:attribute name="saveAsDraftId" type="Id" />
+    <aura:attribute name="tabId" type="string"/>
+    <aura:attribute name="tabName" type="string"/>
+    <aura:attribute name="prevTabName" type="string"/>
+    <aura:attribute name="subTabId" type="string"/>
+    <aura:attribute name="subTabName" type="string"/>
+    <aura:attribute name="templateName" type="string"/>
+    <aura:attribute name="onLoad" type="Boolean"/>
+    <aura:attribute name="tabList" type="list"/>
+    <aura:attribute name="globalHeader" type="list"/>
+    <aura:attribute name="conditionalOperationsArray" type="list"/>
+    <aura:attribute name="metaDataMap" type="map"/>
+    <aura:attribute name="tabsMap" type="map"/>
+    <aura:attribute name="tabsSubTabsMap" type="map"/>
+    <aura:attribute name="questionAnsMapByObj" type="map" default=""/>
+    <aura:attribute name="saveAsDraftMap" type="map" default=""/>    
+    <aura:attribute name="dependentTabsConditionsMap" type="map" default=""/>    
+    <aura:attribute name="dependentSubtabsConditionsMap" type="map" default=""/>    
+    <aura:attribute name="depQuestionsConditionsMapMaster" type="map" default=""/>    
+    <aura:attribute name="questionsProfileSetttingsMap" type="map" default=""/> 
+    <aura:attribute name="subTabsComponent" type="Object" />
+    <aura:attribute name="isGlobalChange" type="Boolean" default="false"/>
+    <aura:attribute name="subTabsComponentId" type="String"/>
+    <aura:attribute name="userProfile" type="String"/>
+    <aura:attribute name="tabOrientation" type="String"/>    
+    <aura:attribute name="menuType" type="String"/>
+    <aura:attribute name="errorMessage" type="string" default=""/>
+    <aura:attribute name="saveOrSubmitFlag" type="String"/>    
+    <lightning:spinner variant="brand" size="large" aura:id="spinner" class="slds-hide"/>
+    <aura:handler name="dataCommuEvnt" event="c:dataCommuEvent" action="{!c.globalSaveToDBEvent}"/>
+    <aura:handler name="tabSubTabUpdateEvent" event="c:tabSubTabUpdateEvent" action="{!c.updateTabsSubTabsMapEvent}"/>
+    
+    <aura:handler name="conditionalDependencyEvent" event="c:conditionalDependencyEvent" action="{!c.loadDependentTabs}"/>
+    <c:validationsCmp aura:id="validationsCmp"/>    
+    <c:comparatorCmp aura:id="comparatorCmp"/>
+    <c:evaluateFinalConditionCmp aura:id="evaluateFinalConditionCmp"/>    
+    <!-- Page Header Starts-->
+    <div class="slds-page-header dynamicWizardHeader" aura:id="kanban">
+        <div class="slds-media">
+            <div class="slds-media__figure">
+                <span class="slds-icon_container slds-icon-standard-opportunity" title="Description of icon when needed">
+                    <lightning:icon iconName="custom:custom51" size="medium" alternativeText="Indicates approval"/>
+                </span>
+            </div>
+            
+            <div class="slds-grid slds-grid_align-start slds-col">
+                <h4 class="slds-page-header__title slds-truncate slds-align-start" title="{!v.templateName}">Template - {!v.templateName}</h4>
+            </div>
+            
+            <div class="slds-grid slds-grid_align-end slds-col">
+                <button class="slds-button  slds-button--neutral" onclick="{!c.restart}">Restart</button>
+                <button class="slds-button  slds-button--neutral" onclick="{!c.saveRecordAsDraft}">Save As Draft</button>
+                <button class="slds-button  slds-button--neutral" data-record="Save" onclick="{!c.globalSave}">Save</button>
+                <button class="slds-button  slds-button--neutral" data-record="Submit" onclick="{!c.globalSave}">Submit</button>
+            </div>
+        </div>
+    </div>
+    <!-- Page Header Ends-->
+
+    <div aura:id="divContainer" class="">        
+        <div aura:id="divNavigation" class="classDivNavigation">
+            <aura:if isTrue="{!v.menuType == 'Horizontal'}" >    
+                <div class="slds-path">
+                    <div class="slds-grid slds-path__track">
+                        <div class="slds-grid slds-path__scroller-container">
+                            <div class="slds-path__scroller" role="application">
+                                <div class="slds-path__scroller_inner">
+                                    <ul class="slds-path__nav" role="listbox" aria-orientation="horizontal">
+                                        <aura:iteration items="{!v.tabList}" var="tab">
+                                            
+                                            <aura:if isTrue="{!and(tab.Has_Condition__c == false ,tab.profileMatch == true)}">                              
+                                                <li aura:id="li" class="{!tab.Selected == true ? 'slds-path__item slds-is-current' : 'slds-path__item slds-is-incomplete'}" data-selected-Index="{!index}" id="{!index}" data-record="{!tab.Id+'#'+tab.Tab_Name__c}"  onclick="{!c.changeGlobalTab}">
+                                                    <a aria-selected="false" class="slds-path__link" href="javascript:void(0);" role="option" tabindex="0" >
+                                                        <span class="slds-path__stage">  
+                                                            <span class="slds-assistive-text">Stage Complete</span>
+                                                        </span>                                      
+                                                        <span class="slds-path__title" title="{!tab.Help_Text__c}">{!tab.Tab_Name__c}</span>                                              
+                                                    </a>                                   
+                                                </li>
+                                            </aura:if>
+                                        </aura:iteration>
+                                    </ul>
+                                    <div class="slds-path__scroll-controls">
+                                        <button class="slds-button slds-button_icon slds-button_icon-border-filled" tabindex="-1" title="Scroll left">
+                                            
+                                            <span class="slds-assistive-text">Scroll left</span>
+                                        </button>
+                                        <button class="slds-button slds-button_icon slds-button_icon-border-filled" tabindex="-1" title="Scroll right">
+                                            
+                                            <span class="slds-assistive-text">Scroll right</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </aura:if>
+            <aura:if isTrue="{!v.menuType == 'Vertical'}" >                    
+                <div class="slds-vertical-tabs">
+                    <ul class="slds-vertical-tabs__nav" role="tablist" aria-orientation="vertical">
+                        <aura:iteration items="{!v.tabList}" var="tab">                            
+                            <aura:if isTrue="{!and(tab.Has_Condition__c == false ,tab.profileMatch == true)}">                              
+                                <li class="{!tab.Selected == true ? 'slds-vertical-tabs__nav-item slds-is-active' : 'slds-vertical-tabs__nav-item'}" title="{!tab.Tab_Name__c}" role="presentation"  data-selected-Index="{!index}" id="{!index}" data-record="{!tab.Id+'#'+tab.Tab_Name__c}" onclick="{!c.changeGlobalTab}">
+                                    <a class="slds-vertical-tabs__link" href="javascript:void(0)" role="tab" tabindex="{!index}">
+                                        <span class="slds-path__title" title="{!tab.Help_Text__c}">{!tab.Tab_Name__c}</span>                                              
+                                    </a>
+                                </li>
+                            </aura:if>
+                        </aura:iteration>         
+                    </ul>
+                </div>
+            </aura:if>
+        </div>            
+        <div aura:id="divContent" class="classDivContent">
+            {!v.body}
+        </div>
+    </div> 
+</aura:component>

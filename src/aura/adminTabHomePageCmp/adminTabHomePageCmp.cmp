@@ -1,0 +1,39 @@
+<aura:component controller="dynamicWizardAdmin" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global">
+    <aura:attribute name="cmpNavigationList" type="String[]"/>
+    <aura:attribute name="pathToSet" type="String"/>
+    <aura:attribute name="templateId" type="String"/>
+    <aura:attribute name="tabId" type="String"/>
+    <aura:attribute name="selectedDeletedTabId" type="String"/>
+    <aura:attribute name="tabList" type="List" />
+    <aura:attribute name="tabColumnsList" type="List" access="public"/>
+    <aura:attribute name="tabTableConfigurationMap" type="Map" access="public"/>
+    <aura:attribute name="sfObjectsList" type="getSfObjectsList"/>
+    <aura:attribute name="userChoice" type="String" default=""/>    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:handler name="dtActionClick" event="ldt:clickedDtAction" action="{!c.tabActionClicked}"/>
+    <aura:registerEvent name="pathDataEvnt" type="c:pathDataEvnt"/>    
+    <lightning:spinner variant="brand" size="large" aura:id="spinner" class="slds-hide"/>
+     <aura:attribute name="loadSortableForSecndTime" type="boolean"/>
+    
+    <div class="slds-media__body">
+        <div class="slds"> 
+            <div class="unhideElement" aura:id="tabLists"> 
+                <section class="project-task-list slds-p-top--x-small">
+                    <div class="task-list slds-p-top--medium">
+                        <ldt:datatableDev title="Tabs List" aura:id="tabListTable" dataRows="{!v.tabList}" header="{!v.tabColumnsList}" config="{!v.tabTableConfigurationMap}"/>        
+                    </div>       
+                </section>
+                <div name="divBtnsSave" class="slds-button-group slds-grid slds-grid_align-center" role="group">
+                    <button class="slds-button slds-button_neutral" onclick="{!c.goToPrevious}">Back</button>                                        
+                    <button class="slds-button slds-button_neutral" onclick="{!c.navigateToSubTabs}">Save and Next</button>
+                </div>	
+            </div>
+            
+        </div>
+        
+    </div>
+    <div>
+        {!v.body}
+    </div>
+    
+</aura:component>

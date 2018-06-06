@@ -1,0 +1,19 @@
+<aura:event type="COMPONENT" access="global">
+    <aura:attribute name="isGlobalTab" type="Boolean" default="false"/>
+    <aura:attribute name="isSubTab" type="Boolean" default="false"/>    
+    <aura:attribute name="saveAsDraft" type="Boolean" default="false"/>
+    <aura:attribute name="globalSave" type="Boolean" default="false"/>
+    <aura:attribute name="dependency" type="Boolean" default="false"/>    
+    <aura:attribute name="tabId" type="String"/>
+    <aura:attribute name="tabName" type="String"/>
+    <aura:attribute name="subTabId" type="String"/>
+    <aura:attribute name="subTabName" type="String"/>
+    <aura:attribute name="userProfile" type="String"/>
+    <aura:attribute name="metaDataMap" type="map"/>
+    <aura:attribute name="formDataMapForSummary" type="map"/>
+    <aura:attribute name="tabsSubTabsMap" type="map"/>
+    <aura:attribute name="questionsProfileSetttingsMap" type="map"/>
+    <aura:attribute name="questionsList" type="list"/>
+    <aura:attribute name="validationError" type="Boolean" default="false"/>
+    <aura:attribute name="questionChildRecordAdded" type="boolean" default="false"/>    
+</aura:event>

@@ -1,0 +1,75 @@
+<aura:component controller="dynamicWizardAdmin" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global">
+    <aura:attribute name="questionId" type="String"/>
+     <aura:attribute name="tabId" type="String"/>
+    <aura:attribute name="tabList" type="List" />
+    <aura:attribute name="subTabId" type="string" />
+    <aura:attribute name="subTabList" type="List" />    
+    <aura:attribute name="sfObjectsList" type="getSfObjectsList"/>
+    <aura:attribute name="userChoice" type="string"/> 
+    <aura:attribute name="templateId" type="String"/>
+    <aura:attribute name="cmpNavigationList" type="String[]"/>
+    <aura:attribute name="questionProfilesList" type="List" />
+    <aura:attribute name="profilesList" type="List" />
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/> 
+   
+    <div class="unhideElement" aura:id="createProfile">       
+        <div aura:id="questionDetailsHeader" class="unhideElement headerQuestion slds-p-bottom_small slds-border_bottom">
+            <h2 class="title slds-text-heading--medium slds-text-align_center" id="titleNewTab">New Profile</h2>
+        </div>        
+         <div class="slds-m-around_xx-large">
+        <h1 class="slds-text-heading--medium">Profiles</h1>
+        <br/>
+        <table class="slds-table slds-table--bordered slds-table--cell-buffer" role="grid">      
+            <thead>  
+                <tr class="slds-text-title--caps">
+                    <th>           
+                        <label class="slds-checkbox">
+                            <ui:inputCheckbox value="{!v.isSelectAll}"  aura:id="selectAll"/>
+                            <span class="slds-checkbox--faux" />
+                            <span class="slds-form-element__label"></span>
+                        </label>
+                    </th>
+                    <th scope="col">
+                        <div class="slds-truncate" title="Name">Profile Name</div>
+                    </th>
+                 <th scope="col">
+                        <div class="slds-truncate" title="Name">Read Only</div>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>        
+                <aura:iteration items="{!v.profilesList}" var="Profile">
+                    <tr>
+                        <th>
+                            <label class="slds-checkbox">
+                                <ui:inputCheckbox aura:id="checkProfile" value="" text="{!Profile.Id + ':' + Profile.Name}"/>
+                                <span class="slds-checkbox--faux" />
+                                <span class="slds-form-element__label"></span>
+                            </label>
+                        </th>
+                        <th scope="row">
+                            <div class="slds-truncate" aura:id="checkProfileName" title="{!Profile.Name}">{!Profile.Name}</div>
+                        </th>
+                        <th scope="row">
+                            <label class="slds-checkbox">
+                                <ui:inputCheckbox aura:id="readonly"/>
+                                <span class="slds-checkbox--faux" />
+                                <span class="slds-form-element__label"></span>
+                            </label>
+                        </th>                                            
+                    </tr>
+                </aura:iteration>
+            </tbody>
+        </table>
+       
+        </div>
+        <div aura:id="questionDetailsBtns" class="footerTab slds-button-group slds-grid slds-grid_align-center slds-border_top slds-p-top_small slds-p-bottom_small" role="group">
+            <button class="slds-button slds-button_neutral" onclick="{!c.goToPrevious}">Back</button>
+            <button class="slds-button slds-button_brand" onclick="{!c.save}">Save</button>
+        </div>        
+        
+    </div>	
+    <div>
+        {!v.body}
+    </div>
+</aura:component>

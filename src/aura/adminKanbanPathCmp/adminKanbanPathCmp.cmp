@@ -1,0 +1,61 @@
+<aura:component controller="dynamicWizardAdmin" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global">   
+    <aura:attribute name="showHeader" type="boolean" default="false"/>
+    <aura:attribute name="sfObjectsList" type="getSfObjectsList"/>
+	<aura:attribute name="cmpNavigationList" type="String[]"/>    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:attribute name="templateId" type="String"/>
+    <aura:attribute name="items" type="Object"/>
+     <aura:attribute name="userChoice" type="String" default=""/>  
+    <aura:attribute name="tabList" type="list" default="[{Name: 'Template', Selected: true},{Name: 'Tabs', Selected: false},{Name: 'Sub Tabs', Selected: false},{Name: 'Questions', Selected: false}]"/>
+	<aura:handler name="pathDataEvnt" event="c:pathDataEvnt" action="{!c.setCurrentPath}"/>    
+    <lightning:spinner variant="brand" size="large" aura:id="spinner" class="slds-hide"/>   
+    
+    <aura:if isTrue="{!v.showHeader}">    
+        <!-- Page Header Starts-->
+        <div class="slds-page-header" >
+            <a class="anchorHeaderKanban" href="" onclick="{!c.navigateToHome}">            
+            <div class="slds-media">
+                <div class="slds-media__figure">
+                    <span class="slds-icon_container slds-icon-standard-opportunity" title="Description of icon when needed">
+                        <lightning:icon iconName="custom:custom51" size="medium" alternativeText="Indicates approval"/>
+                    </span>
+                </div>
+                <div class="slds-media__body">
+                    <div class="slds-grid">
+                        <div class="slds-col">
+                            <h1 class="slds-page-header__title slds-truncate slds-align-middle" title="Admin - Services">
+                              <a href="javascript:void(0);" onclick="{!c.navigateToHomePage}">
+                                    Wizard Admin Services
+                                </a>
+                            </h1>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            </a>
+        </div>
+    </aura:if>            
+    
+    <div aura:id="templateCmpId" class="slds-grid slds-m-top_small slds-m-right_small slds-m-left_small slds-box">        
+        <div class="slds-col">
+            <div aura:id="divMenu">                    
+                <ul class="slds-path__nav" role="listbox" aria-orientation="horizontal">
+                    <aura:iteration items="{!v.tabList}" var="tab">                                
+                        <li aura:id="li" class="{!tab.Selected == true ? 'slds-path__item slds-is-current' : 'slds-path__item slds-is-incomplete'}" data-selected-Index="{!index}" id="{!index}" data-record="{!tab.Name}">
+                            <a aria-selected="false" class="slds-path__link" href="javascript:void(0);" role="option" tabindex="0" >
+                                <span class="slds-path__stage">  
+                                    <span class="slds-assistive-text">Stage Complete</span>
+                                </span>
+                                <span class="slds-path__title" >{!tab.Name}</span>                                          
+                            </a>
+                            
+                        </li>
+                    </aura:iteration>
+                </ul> 
+            </div>
+            <div aura:id="CmpToLoad">
+                {!v.body}
+            </div>                   
+        </div>
+    </div>
+</aura:component>

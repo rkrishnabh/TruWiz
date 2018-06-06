@@ -1,0 +1,320 @@
+<aura:component controller="dynamicWizardAdmin"  implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global">
+    <aura:attribute name="subTabObj" type="WizardHeader__c" default="{'sobjectType': 'WizardHeader__c',
+                                                                     'SubTab__c': '',
+                                                                     'Tabs__c':'',
+                                                                     'Parent_Object_Name__c':'',
+                                                                     'Parent_Object_API_Name__c': '',
+                                                                     'Object_Name__c':'',
+                                                                     'Object_API_Name__c':'',
+                                                                     'Has_Condition__c':'',
+                                                                     'Condition_Filter_Logic__c': '',
+                                                                     'Form_Type__c':'',
+                                                                     'Conditional_Logic__c':'',
+                                                                     'Data_View__c':'',
+                                                                     'Layout_Type__c': '',
+                                                                     'Profile__c':'',
+                                                                     'ProfileId__c':'',
+                                                                     'Field_Name__c':'',
+                                                                     'Field_API_Name__c':'',
+                                                                     'Filtering_Value__c':'',
+                                                                     'Relationship__c':'',
+                                                                     'Org_Parent_Object_API_Name__c':'',
+                                                                     'Help_Text__c':''
+                                                                     }"/>
+    <aura:attribute name="errorMessage" type="String"/>
+    <aura:attribute name="cmpNavigationList" type="String[]"/>    
+    <aura:attribute name="sfParentObjectsList" type="getSfObjectsList"/>
+    <aura:attribute name="sfObjectsList" type="getSfObjectsList"/>
+    <aura:attribute name="sfObjectsNameList" type="Object"/>    
+    <aura:attribute name="selctedObjectValue" type="String"/>
+    <aura:attribute name="popupBoolean" type="boolean" default="true"/>
+    <aura:attribute name="userChoice" type="String" default=""/>
+    <aura:attribute name="tabName" type="String"/>
+    <aura:attribute name="subtabName" type="String"/>
+    <aura:attribute name="sfFieldsList" type="getsobjectFieldsList"/>
+    <aura:attribute name="subTabProfile" type="String"/> 
+    <aura:attribute name="subTabProfileId" type="String"/> 
+    <!--Start for TabPopup-->
+    <aura:attribute name="tabId" type="String"/> 
+    <aura:attribute name="selectedTabId" type="String"/>  
+    <aura:attribute name="selectedTabName" type="String"/>      
+    <aura:attribute name="tabPopupBoolean" type="boolean" default="false"/> 
+    <aura:attribute name="tabList" type="List"/>
+    <aura:attribute name="tabColumnsList" type="List" access="public"/>
+    <aura:attribute name="tabTableConfigurationMap" type="Map" access="public"/>
+    <!--End for TabPopup-->
+    <!--Start for TemplatePopup-->
+    <aura:attribute name="templateId" type="String"/>
+    <aura:attribute name="selectedTemplateId" type="String"/>
+    <aura:attribute name="selectedTemplateName" type="String"/>
+    <aura:attribute name="templatePopupBoolean" type="boolean" default="false"/>
+    <aura:attribute name="templateList" type="List" />
+    <aura:attribute name="templateColumnsList" type="List" access="public"/>
+    <aura:attribute name="templateTableConfigurationMap" type="Map" access="public"/>
+    <!--End for TemplatePopup--> 
+    <aura:attribute name="subTabId" type="String"/>
+    <aura:attribute name="name" type="String"/>
+    <aura:attribute name="subTabList" type="List" />
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:handler name="dtActionClick" event="ldt:clickedDtAction" action="{!c.dtActionClicked}"/> 
+    <aura:handler name="hideElementsEvnt" event="c:hideElementsEvnt" action="{!c.hideElements}"/>
+    <aura:handler name="oSelectedRecordEvent" event="c:selectedsObjectRecordEvent" action="{!c.captureSelectedLookUpValEvent}"/>    
+    <aura:handler name="conditionLogicUpdateEvent" event="c:conditionLogicUpdateEvent" action="{!c.doInit}"/> 
+    <lightning:spinner variant="brand" size="large" aura:id="spinner" class="slds-hide"/>
+    
+    <div class="unhideElement" aura:id="createSubTab">        
+        <div aura:id="subTabDetailsHeader" class="unhideElement headerSubTab slds-p-bottom_small slds-border_bottom">
+            <h2 class="title slds-text-heading--medium slds-text-align_center" id="titleNewTab">
+                <aura:if isTrue="{!v.subTabId}">
+                    Edit SubTab
+                    <aura:set attribute="else">
+                        New SubTab
+                    </aura:set>
+                </aura:if>            
+            </h2>
+        </div>         
+        <div aura:id="subTabData" class="unhideElement slds-m-top_medium subTabData" >
+            <div class="slds-form slds-form_compound" aura:id="sample">
+                <fieldset class="slds-form-element">
+                    <div class="slds-form-element__group">
+                        <div class="slds-form-element__row">
+                            <aura:if isTrue="{!v.userChoice == 'NewSubTab'}">
+                                <div class="slds-form-element slds-size_1-of-2">
+                                    <lightning:input type="text" label="Template Name" name="Template Name"  value="{!v.selectedTemplateName}" aura:id="TemplateName" required="true" placeholder="Click to search" onfocus="{!c.templatePopup}"></lightning:input>
+                                    
+                                    <a class="slds-hide" onclick="{!c.templatePopup}">
+                                        <lightning:icon iconName="utility:search" size="small" alternativeText="Indicates approval" />
+                                    </a>
+                                </div>
+                            </aura:if>
+                        </div>
+                    </div>
+                </fieldset>
+                <fieldset class="slds-form-element">
+                    <div class="slds-form-element__group">
+                        <div class="slds-form-element__row">
+                            <div class="slds-form-element slds-size_1-of-2">
+                                <div class="slds-form-element__control">
+                                    <lightning:input type="text" label="SubTab Name" name="SubTab Name" value="{!v.subTabObj.SubTab__c}" aura:id="Name" required="true" />  
+                                </div>   
+                            </div>                            
+                            <div class="slds-form-element slds-size_1-of-2">
+                                <aura:if isTrue="{!v.popupBoolean}">
+                                    <lightning:input type="text" label="Tab Name" name="Tab Name"  value="{!if(v.selectedTabName == null , v.subTabObj.Subtabs_Tab__c,v.selectedTabName)}" aura:id="TabName" required="true" placeholder="Click to search" onfocus="{!c.tabPopup}"></lightning:input>
+                                    <aura:set attribute="else">
+                                        <lightning:input type="text" label="Tab Name" name="Tab Name" value="{!v.subTabObj.Tabs__c}" aura:id="TabName1" required="true" placeholder="{!v.selectedTabName}"></lightning:input> 
+                                    </aura:set>
+                                </aura:if> 
+                                <a class="slds-hide" onclick="{!c.tabPopup}">
+                                    <lightning:icon iconName="utility:search" size="small" alternativeText="Indicates approval" />
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+                <fieldset class="slds-form-element">
+                    <div class="slds-form-element__group">
+                        <div class="slds-form-element__row">
+                            <div class="slds-form-element slds-size_1-of-2 slds-grid slds-grid_vertical-align-center">
+                                <lightning:select aura:id="dynamicParentSobject" name="Parent Object Name" label="Parent Object Name" value="{!v.subTabObj.Org_Parent_Object_API_Name__c}" onchange="{!c.handleParentObjectChange}">
+                                    <option  value="None">--None--</option>                                    
+                                    <aura:iteration items="{!v.sfParentObjectsList}" var="option">
+                                        <option  value="{!option.Name}" selected="{!option.Selected}">{!option.Label}</option>
+                                    </aura:iteration>
+                                </lightning:select>  
+                            </div>
+                            <div class="slds-form-element slds-size_1-of-2 slds-grid slds-grid_vertical-align-center">
+                                <lightning:select name="Data View" label="Data View"  aura:id="dataView" value="{!v.subTabObj.Data_View__c}">
+                                    <option  value="Single Record View">Single Record View</option>
+                                    <option  value="Multiple Record View">Multiple Record View</option>
+                                </lightning:select>
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+                <fieldset class="slds-form-element">
+                    <div class="slds-form-element__group">
+                        <div class="slds-form-element__row">
+                            <div class="slds-form-element slds-size_1-of-2 slds-grid slds-grid_vertical-align-center">
+                                <lightning:select name="Relationship" label="Relationship" value="{!v.subTabObj.Relationship__c}"  aura:id="relationship" onchange="{!c.handleRelationshipChange}">
+                                    <option  value="None">--None--</option>
+                                    <option  value="1:1">1:1</option>
+                                    <option  value="1:M">1:M</option>
+                                </lightning:select>
+                            </div>
+                            <div class="slds-form-element slds-size_1-of-2 slds-grid slds-grid_vertical-align-center">
+                                <lightning:select name="Form Type" label="Form Type"  aura:id="formType" value="{!v.subTabObj.Form_Type__c}" onchange="{!c.handleFormTypeChange}">
+                                    <option  value="Two">Two</option>
+                                    <option  value="One">One</option>
+                                </lightning:select>
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+                <fieldset class="slds-form-element">
+                    <div class="slds-form-element__group">
+                        <div class="slds-form-element__row">
+                            <div class="slds-form-element slds-size_1-of-2 slds-grid slds-grid_vertical-align-center">
+                                <lightning:select aura:id="dynamicObjectName"  label="Object Name" value="{!v.subTabObj.Object_API_Name__c}"  onchange="{!c.handleObjectChange}">
+                                    <option  value="None">--None--</option>                                        
+                                    <aura:iteration items="{!v.sfObjectsNameList}" var="option">
+                                        <option value="{!option.Name}" selected="{!option.Selected}">{!option.Label}</option>
+                                    </aura:iteration>
+                                </lightning:select>     
+                            </div>
+                            <div class="slds-form-element slds-size_1-of-2 slds-grid slds-grid_vertical-align-center">
+                                <div class="slds-form-element slds-size_1-of-2 slds-grid slds-grid_vertical-align-center">
+                                    <lightning:select name="Layout Type" label="Layout Type"  aura:id="layoutType" value="{!v.subTabObj.Layout_Type__c}" onchange="{!c.handleLayoutTypeChange}">
+                                        <option  value="Form Layout">Form Layout</option>
+                                        <option  value="Tabular Layout">Tabular Layout</option>
+                                    </lightning:select> 
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+                <fieldset class="slds-form-element">
+                    <div class="slds-form-element__group">
+                        <div class="slds-form-element__row">
+                            <div class="slds-form-element slds-size_1-of-2 slds-grid slds-grid_vertical-align-center">
+                                <lightning:select name="Field Name" label="Salesforce Field Name" value="{!v.subTabObj.Field_API_Name__c}"  aura:id="dynamicSobjectField"  onchange="{!c.handleFieldName}">
+                                    <option  value="None">--None--</option>
+                                    <aura:iteration items="{!v.sfFieldsList}" var="option">       
+                                        <option  value="{!option.Name}" selected="{!option.Selected}">{!option.Label}</option>
+                                    </aura:iteration> 
+                                </lightning:select> 
+                            </div>
+                            <div class="slds-form-element slds-size_1-of-2 slds-grid slds-grid_vertical-align-center">
+                                <div class="slds-form-element__control">
+                                    <lightning:input type="text" label="Filtering Value" name="Filtering Value" value="{!v.subTabObj.Filtering_Value__c}" aura:id="filteringValue"/>  
+                                </div>                                  
+                            </div>                                  
+                        </div>
+                    </div>
+                </fieldset>
+                <fieldset class="slds-form-element">
+                    <div class="slds-form-element__group">
+                        <div class="slds-form-element__row">
+                            <div class="slds-form-element slds-size_1-of-2 slds-grid slds-grid_vertical-align-center">
+                                <div class="slds-form-element__control">
+                                    <lightning:input type="text" label="Reference Object API Name" name="Reference Object API Name"  value="{!v.subTabObj.Parent_Object_API_Name__c}" aura:id="referenceFieldAPIName"></lightning:input>
+                                </div>                                  
+                            </div>
+                            <div class="slds-form-element slds-size_1-of-2 slds-grid slds-grid_vertical-align-center">
+                                 <c:customLookup lookUpType="MULTIPICKLIST" label="Profile Name" IconName="standard:account" multiSelectPicklistAnswers="{!v.subTabProfile}" multiSelectPicklistAnswersId="{!v.subTabProfileId}" moduleName='Admin'/>                    
+                            </div>    
+                                                 
+                        </div>
+                    </div>
+                </fieldset>
+                <fieldset class="slds-form-element">
+                    <div class="slds-form-element__group">
+                        <div class="slds-form-element__row">
+                                 
+                                <aura:if isTrue="{!v.subTabId}">
+                                    <div class="slds-form-element slds-size_1-of-2 slds-grid slds-grid_vertical-align-center">
+                                        <lightning:input type="text" label="Conditional Logic" name="ConditionalLogic" value="{!v.subTabObj.Conditional_Logic__c}" aura:id="Logic" readonly="true"/>
+                                    </div>
+                                    
+                                     <div class="slds-form-element slds-size_1-of-2">
+                                   <lightning:textarea name="myTextArea" label="Help Text" aura:id="helpText"  value="{!v.subTabObj.Help_Text__c}"/>
+                                </div>
+                                </aura:if>    
+                            
+                        </div>
+                    </div>
+                </fieldset>
+            </div>
+        </div>
+        <aura:if isTrue="{!v.subTabId}">
+            <!--<div aura:id="questionsHomePageCmpContainer" class="unhideElement task-list questionsHomePageCmpContainer">-->
+            <div aura:id="questionsHomePageCmpContainer" class="unhideElement task-list questionsHomePageCmpContainer">            
+                <c:adminQuestionsHomePageCmp templateId="{!v.templateId}" tabId="{!v.tabId}" subTabId="{!v.subTabId}" selectedSubTabName="{!v.subTabObj.SubTab__c}" selectedSubTabObjectName="{!v.subTabObj.Object_Name__c}" selectedSubTabObjectApiName="{!v.subTabObj.Object_API_Name__c}"  selectedSubTabParentObjectName="{!v.subTabObj.Parent_Object_Name__c}" selectedSubTabFieldApiName="{!v.subTabObj.Field_API_Name__c}" selectedSubTabFieldName="{!v.subTabObj.Field_Name__c}" selectedSubTabParentObjectApiName="{!v.subTabObj.Parent_Object_API_Name__c}" selectedSubTabOrgParentObjectApiName="{!v.subTabObj.Org_Parent_Object_API_Name__c}" selectedSubTabRelationship="{!v.subTabObj.Relationship__c}" tabList="{!v.tabList}" tabName="{!v.tabName}" subtabName="{!v.subtabName}"  auraIdListToHide="['subTabDetailsHeader','subTabData','dependentConditionListContainer','subTabDetailsBtns']" sfObjectsList="{!v.sfObjectsList}" cmpNavigationList="{!v.cmpNavigationList}" userChoice="{!v.userChoice}"/> 
+            </div>
+            <!--<div aura:id="dependentConditionListContainer" class="unhideElement task-list slds-p-top-medium dependentConditionListContainer">-->
+            <div aura:id="dependentConditionListContainer" class="unhideElement task-list dependentConditionListContainer">                    
+                <!--Calling adminDependentConditionsList component-->
+                <c:adminDependentConditionsList templateId="{!v.templateId}"  dependenceType="subTab" Id="{!v.subTabId}" tabId="{!v.tabId}" tabList="{!v.tabList}" name="{!v.subtabName}" tabName="{!v.tabName}" auraIdListToHide="['subTabDetailsHeader','subTabData','questionsHomePageCmpContainer','subTabDetailsBtns']" sfObjectsList="{!v.sfObjectsList}" cmpNavigationList="{!v.cmpNavigationList}" userChoice="{!v.userChoice}"/>
+            </div>
+        </aura:if>
+        
+        <div aura:id="subTabDetailsBtns" name="divBtnsSave" class="footerTab slds-button-group slds-grid slds-grid_align-center slds-border_top slds-p-top_small slds-p-bottom_small" role="group">
+            <button class="slds-button slds-button_neutral" onclick="{!c.goToPrevious}">Back</button>       
+            <button class="slds-button slds-button_neutral" onclick="{!c.save}">Save</button>
+        </div>
+    </div>
+    <div>
+        <!--Model PopUp for Tab starts -->
+        <aura:if isTrue="{!v.tabPopupBoolean}">
+            <div class="demo-only" style="height: 640px;">
+                <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                    <div class="slds-modal__container">
+                        <header class="slds-modal__header">
+                            <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close">
+                                <a onclick="{!c.closedPopUp}">X
+                                </a>
+                                <span class="slds-assistive-text">Close</span>
+                            </button>
+                            <h2 id="modal-heading-02" class="slds-text-heading_medium slds-hyphenate">Tabs</h2>
+                        </header>
+                        <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-2">
+                            
+                            <div class="slds">
+                                <div class="unhideElement" aura:id="tabLists">
+                                    <section class="project-task-list slds-p-top--x-small">
+                                        <div class="task-list slds-p-top--medium">
+                                            <ldt:datatableDev title="Tab Details" aura:id="tabListTable" dataRows="{!v.tabList}" header="{!v.tabColumnsList}" config="{!v.tabTableConfigurationMap}"/>       
+                                        </div>      
+                                    </section>
+                                </div>
+                            </div>
+                        </div>
+                        <footer class="slds-modal__footer">
+                            <lightning:button variant="neutral" label="Cancel" onclick="{!c.closedPopUp}"/>
+                        </footer>
+                    </div>
+                </section>
+                <div class="slds-backdrop slds-backdrop_open"></div>
+            </div>
+        </aura:if>
+        <!--Model PopUp for Tab ends -->
+    </div>
+    <div>
+        <!--Model PopUp for Template starts -->
+        <aura:if isTrue="{!v.templatePopupBoolean}">
+            <div class="demo-only" style="height: 640px;">
+                <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                    <div class="slds-modal__container">
+                        <header class="slds-modal__header">
+                            <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close">
+                                <a onclick="{!c.closedPopUp}">X
+                                </a>
+                                <span class="slds-assistive-text">Close</span>
+                            </button>
+                            <h2 id="modal-heading-02" class="slds-text-heading_medium slds-hyphenate">Templates</h2>
+                        </header>
+                        <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-2">
+                            <div class="slds">
+                                <div class="unhideElement" aura:id="templateLists">
+                                    <section class="project-task-list slds-p-top--x-small">
+                                        <div class="task-list slds-p-top--medium">
+                                            <ldt:datatableDev title="Template Details" aura:id="templateListTable" dataRows="{!v.templateList}" header="{!v.templateColumnsList}" config="{!v.templateTableConfigurationMap}"/>         
+                                        </div>      
+                                    </section>
+                                </div>
+                            </div>
+                        </div>
+                        <footer class="slds-modal__footer">
+                            <lightning:button variant="neutral" label="Cancel" onclick="{!c.closedPopUp}"/>
+                        </footer>
+                    </div>
+                </section>
+                <div class="slds-backdrop slds-backdrop_open"></div>
+            </div>
+        </aura:if>
+        <!--Model PopUp for Template ends -->
+    </div>
+    <div>
+        {!v.body}
+    </div>
+</aura:component>

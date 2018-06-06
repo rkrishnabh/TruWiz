@@ -1,0 +1,35 @@
+.THIS {
+}
+
+.THIS .subTabsDt{
+    margin-top: 20px;
+    border-radius: .25rem;
+    border: 1px solid #dddbda;
+}
+
+.THIS .subTabsTHead{
+padding: .5rem;
+letter-spacing: .0625rem;
+/*height: 34px;*/
+}
+
+.THIS .subTabsTd{
+    border-top: 1px solid #d8dde6;
+    padding: .5rem;
+}
+
+/*.THIS tr:hover td {
+    -moz-box-shadow: 0 4px 2px -3px rgba(0, 0, 0, 0.5) inset;
+    -webkit-box-shadow: 0 4px 2px -3px rgba(0, 0, 0, 0.5) inset;
+    box-shadow: 0 4px 2px -3px rgba(0, 0, 0, 0.5) inset;
+}
+.THIS tr:hover td:first-child {
+    -moz-box-shadow: 4px 4px 2px -3px rgba(0, 0, 0, 0.5) inset;
+    -webkit-box-shadow: 4px 4px 2px -3px rgba(0, 0, 0, 0.5) inset;
+    box-shadow: 4px 4px 2px -3px rgba(0, 0, 0, 0.5) inset;
+}
+.THIS tr:hover td:last-child {
+    -moz-box-shadow: 0 4px 2px -3px rgba(0, 0, 0, 0.5) inset;
+    -webkit-box-shadow: 0 4px 2px -3px rgba(0, 0, 0, 0.5) inset;
+    box-shadow: 0 4px 2px -3px rgba(0, 0, 0, 0.5) inset;
+}*/

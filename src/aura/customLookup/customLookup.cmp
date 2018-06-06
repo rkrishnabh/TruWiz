@@ -1,0 +1,129 @@
+<aura:component controller="dynamicWizard" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global">
+    
+    <!--declare attributes--> 
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/> 
+    <aura:attribute name="selectedRecord" type="sObject" default="{}" description="Use,for store SELECTED sObject Record"/>    
+    <aura:attribute name="lookUpDataStr" type="string"/>
+    <aura:attribute name="lookUpDataMasterList" type="List"/>
+    <aura:attribute name="lookUpDataList" type="List" description="Use,for store the list of search results records "/>
+    <aura:attribute name="multiSelectPicklistAnswers" type="string"/>
+    <aura:attribute name="multiSelectPicklistAnswersId" type="string"/>
+    <aura:attribute name="multiSelectPicklistAnswersList" type="List" />
+    <aura:attribute name="multiSelectPicklistIdAnswersList" type="List" />
+    <aura:attribute name="SearchKeyWord" type="string"/>
+    <aura:attribute name="objectAPIName" type="string" default=""/>
+    <aura:attribute name="IconName" type="string" default=""/>
+    <aura:attribute name="isFormLayout" type="Boolean" default="true"/>    
+    <aura:attribute name="label" type="string" default=""/>
+    <aura:attribute name="value" type="string"/>
+    <aura:attribute name="names" type="string"/>
+    <aura:attribute name="questionId" type="string"/>
+    <aura:attribute name="selectedLookUpId" type="string"/>
+    <aura:attribute name="selectedLookUpName" type="string"/> 
+    <aura:attribute name="lookUpType" type="string"/>
+    <aura:attribute name="moduleName" type="string"/>
+    <aura:attribute name="metaDataApi" type="string"/>
+    <aura:attribute name="fieldsToBeQueried" type="string"/>
+    <aura:attribute name="max" type="integer"/>
+    <aura:attribute name="required" type="boolean"/>
+    
+    
+    <aura:registerEvent name="oSelectedRecordEvent" type="c:selectedsObjectRecordEvent"/>
+    <aura:handler event="aura:waiting" action="{!c.showSpinner}"/>
+    <aura:handler event="aura:doneWaiting" action="{!c.hideSpinner}"/>
+    <aura:attribute name="Message" type="String" default=""/>
+    
+    <div aura:id="searchRes" class="slds-form-element slds-lookup slds-is-close" data-select="single">
+        <aura:if isTrue="{!v.isFormLayout}">
+            <label class="slds-form-element__label" for="lookup-348">{!v.label}</label>
+        </aura:if>            
+        <!--This part is for display search bar for lookup-->  
+        <div class="slds-form-element__control">
+            <div class="slds-input-has-icon slds-input-has-icon--right">
+                <lightning:icon class="slds-input__icon slds-show" iconName="utility:search" size="x-small" alternativeText="search"/> 
+                <!-- This markup is for when an record is selected -->
+                <div aura:id="lookup-pill" class="slds-pill-container slds-hide" style="display:none;">
+                    <span class="slds-pill" style="width:100%">
+                        <span class="slds-icon_container  slds-combobox__input-entity-icon" title="record">
+                            <lightning:icon class="slds-icon slds-icon slds-icon_small slds-icon-text-default" iconName="{!v.IconName}" size="x-small" alternativeText="icon"/>
+                            <span class="slds-assistive-text"></span>
+                        </span>  
+                        <span class="slds-pill__label slds-p-left_x-large">
+                            {!v.value}                         
+                        </span>
+                        <button class="slds-button slds-button--icon slds-pill__remove" onclick="{!c.clear}">
+                            <lightning:icon class="slds-button__icon" iconName="utility:close" size="x-small" alternativeText="search"/>  
+                            <span class="slds-assistive-text">Remove</span>
+                        </button>
+                    </span>
+                </div>
+                
+                <div aura:id="lookupField" class="slds-show">
+                    <span class="slds-icon_container  slds-combobox__input-entity-icon" title="record">
+                        <lightning:icon class="slds-icon slds-icon slds-icon_small slds-icon-text-default" iconName="{!v.IconName}" size="x-small" alternativeText="icon"/>
+                        <span class="slds-assistive-text"></span>
+                    </span>
+                    <ui:inputText updateOn="keyup" keyup="{!c.keyPressController}" class="slds-lookup__search-input slds-input leftPaddingClass" value="{!v.value}" placeholder="search.." blur="{!c.mouseouted}"/>   
+                </div>  
+            </div>
+        </div>
+        <!--This part is for Display typehead lookup result List--> 
+        <div class="slds-hide" aura:id="lookupData">
+            <ul class="slds-listbox slds-listbox_vertical slds-dropdown slds-dropdown_fluid slds-lookup__menu slds" role="listbox">            
+                <div class="slds-clearfix ">
+                    <div class="slds-clearfix">
+                        <div class="slds-float_right">
+                            <p>
+                                <div class="slds-icon slds-icon-text-default slds-icon--x-small">
+                                    <a onclick="{!c.mouseouted}">
+                                        X
+                                    </a>  
+                                </div>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <center> <ui:spinner aura:id="spinner"/> </center>
+                <center> {!v.Message}</center>
+                
+                <aura:iteration items="{!v.lookUpDataList}" var="singleRec">
+                    <a href="javascript:void(0);" data-record="{!singleRec.Id}" data-seq="{!singleRec.Name}" onclick="{!c.selectedRecordDetails}" tabindex="0" >
+                        <li role="presentation" class="slds-listbox__item">
+                            <span id="listbox-option-unique-id-01" class="slds-media slds-listbox__option slds-listbox__option_entity slds-listbox__option_has-meta" role="option">
+                                <span class="slds-media__figure">
+                                    <span class="slds-icon_container" title="Description of icon when needed">
+                                        <lightning:icon iconName="{!v.IconName}" class="slds-icon slds-icon_small" size="small" alternativeText="icon"/>
+                                        <span class="slds-assistive-text">Description of icon</span>
+                                    </span>
+                                </span>    
+                                <span class="slds-media__body">  
+                                    <span class="slds-listbox__option-text slds-listbox__option-text_entity">{!singleRec.Name} </span>   
+                                </span>   
+                            </span>   
+                        </li> 
+                    </a>
+                </aura:iteration>        
+            </ul>
+        </div>
+        
+        
+        <aura:if isTrue="{!v.lookUpType == 'MULTIPICKLIST'}">   
+            <div >
+                <div aura:id="questionPills" class="slds-pill_container slds-pill_container--bare">
+                    <ul class="slds-listbox slds-listbox_horizontal" role="listbox">
+                        <aura:iteration items="{!v.multiSelectPicklistAnswersList}" var="pill" indexVar="index">
+                            <li role="presentation">
+                                <span class="slds-pill">
+                                    <span class="slds-pill__label" style="font-size: .8125rem" title="{!pill}">{!pill}</span>                                    
+                                    <a href="javascript:void(0);" data-record="{!index}"  onclick="{!c.deleteMultiSelectValue}" tabindex="0" > X </a>                                    
+                                </span>
+                            </li>
+                        </aura:iteration>
+                    </ul>
+                </div>
+            </div>
+        </aura:if>
+    </div>
+    
+</aura:component>

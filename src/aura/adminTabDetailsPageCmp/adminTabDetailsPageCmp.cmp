@@ -1,0 +1,177 @@
+<aura:component controller="dynamicWizardAdmin" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global">
+    <aura:attribute name="tabObj" type="WizardHeader__c" default="{'sobjectType': 'WizardHeader__c',
+                                                                  'Tab_Name__c': '',
+                                                                  'Has_Condition__c':'',
+                                                                  'Condition_Filter_Logic__c':'',
+                                                                  'Template_Name__c':'',
+                                                                  'Conditional_Logic__c':'',
+                                                                  'Profile__c':'',
+                                                                  'ProfileId__c':'',
+                                                                  'Help_Text__c':''
+                                                                  }"/>
+    <aura:attribute name="errorMessage" type="String"/>
+    <aura:attribute name="cmpNavigationList" type="String[]"/>    
+    <aura:attribute name="sfObjectsList" type="getSfObjectsList"/>
+    <aura:attribute name="tabId" type="String"/>
+    <aura:attribute name="name" type="String"/>
+    <aura:attribute name="tabName" type="String"/>
+    <aura:attribute name="subTabId" type="String"/>
+    <aura:attribute name="templateId" type="String"/>
+    <aura:attribute name="userChoice" type="String" default=""/>
+    <aura:attribute name="tabProfile" type="String"/> 
+    <aura:attribute name="tabProfileId" type="String"/>
+    <aura:attribute name="subTabList" type="List"/>    
+    <aura:attribute name="selectedRecord" type="sObject" default="{}" description="Use,for store SELECTED sObject Record"/>
+    <aura:handler name="oSelectedRecordEvent" event="c:selectedsObjectRecordEvent" action="{!c.captureSelectedLookUpValEvent}"/>
+    <aura:handler name="conditionLogicUpdateEvent" event="c:conditionLogicUpdateEvent" action="{!c.doInit}"/>
+    
+   <!--Start for TemplatePopup-->
+    <aura:attribute name="selectedTemplateId" type="String"/>
+    <aura:attribute name="selectedTemplateName" type="String"/>
+    <aura:attribute name="templatePopupBoolean" type="boolean" default="false"/> 
+    <aura:attribute name="popupBoolean" type="boolean" default="true"/>
+    <aura:attribute name="templateList" type="List" />
+    <aura:attribute name="templateColumnsList" type="List" access="public"/>
+    <aura:attribute name="templateTableConfigurationMap" type="Map" access="public"/>
+    <aura:handler name="dtActionClick" event="ldt:clickedDtAction" action="{!c.templateClickAction}"/>
+    <!--End for TemplatePopup-->
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:handler name="hideElementsEvnt" event="c:hideElementsEvnt" action="{!c.hideElements}"/>    
+    <lightning:spinner variant="brand" size="large" aura:id="spinner" class="slds-hide"/>   
+    
+    <div class="unhideElement adminTabDetailsPageCmpUclass" aura:id="createTab">        
+        <div aura:id="tabDetailsHeader" class="unhideElement headerTab slds-p-bottom_small slds-border_bottom tabDetailsHeader">
+            <h2 class="title slds-text-heading--medium slds-text-align_center" id="titleNewTab">
+                <aura:if isTrue="{!v.tabId}">
+                    Edit Tab
+                    <aura:set attribute="else">
+                        New Tab
+                    </aura:set>
+                </aura:if>            
+                <!--New/Edit Tab-->            
+            </h2>
+        </div>         
+        <div aura:id="tabData" class="unhideElement slds-m-top_medium tabData" >
+            <div class="slds-form slds-form_compound">
+                <fieldset class="slds-form-element">
+                    <div class="slds-form-element__group">
+                        <div class="slds-form-element__row">
+                            <aura:if isTrue="{!v.userChoice == 'NewTab'}">
+                                <div class="slds-form-element slds-size_1-of-2">
+                                    <aura:if isTrue="{!v.popupBoolean}">
+                                        <lightning:input type="text" label="Template Name" name="Template Name"  value="{!v.selectedTemplateName}" aura:id="TemplateName" required="true" placeholder="Click to search" onfocus="{!c.templatePopup}"></lightning:input>
+                                    </aura:if> 
+                                </div>
+                            </aura:if>
+                            <a class="slds-hide" onclick="{!c.templatePopup}">
+                                <lightning:icon iconName="utility:search" size="small" alternativeText="Indicates approval" />
+                            </a>
+                        </div>
+                    </div>
+                </fieldset>
+                <fieldset class="slds-form-element">
+                    <div class="slds-form-element__group">
+                        <div class="slds-form-element__row">
+                            <div class="slds-form-element slds-size_1-of-2">
+                                <lightning:input type="text" label="Tab Name" name="Tab Name" value="{!v.tabObj.Tab_Name__c}" aura:id="name" required="true"/>                                        
+                            </div>
+                            <div class="slds-form-element slds-size_1-of-2">
+                              
+                                <c:customLookup lookUpType="MULTIPICKLIST" label="Profile Name" IconName="standard:account" multiSelectPicklistAnswers="{!v.tabProfile}" multiSelectPicklistAnswersId="{!v.tabProfileId}" moduleName='Admin'/> 
+                                </div> 
+                        </div>
+                    </div>
+                </fieldset>
+                 <fieldset class="slds-form-element">
+                    <div class="slds-form-element__group">
+                        <div class="slds-form-element__row">
+                            <aura:if isTrue="{!v.tabId}">
+                                <div class="slds-form-element slds-size_1-of-2">
+                                    <lightning:input type="text" label="Conditional Logic" name="ConditionalLogic" value="{!v.tabObj.Conditional_Logic__c}" aura:id="logic"  readonly="true"/>                                        
+                                </div>
+                                
+                                <div class="slds-form-element slds-size_1-of-2">
+                                   <lightning:textarea name="myTextArea" label="Help Text" aura:id="helpText"  value="{!v.tabObj.Help_Text__c}"/>
+                                </div>
+                            </aura:if>
+                        </div>
+                    </div>
+                </fieldset>
+            </div>
+        </div>
+        <aura:if isTrue="{!v.tabId}">
+            <!--<div aura:id="subTabHomePageCmpContainer" class="unhideElement task-list slds-p-top-medium subTabHomePageCmpContainer">-->
+            <div aura:id="subTabHomePageCmpContainer" class="unhideElement task-list subTabHomePageCmpContainer">            
+                <c:adminSubTabHomePageCmp tabId="{!v.tabId}" selectedTabName="{!v.tabObj.Tab_Name__c}" templateId="{!v.templateId}" sfObjectsList="{!v.sfObjectsList}" subTabId="{!v.subTabId}" userChoice="{!v.userChoice}" tabName="{!v.tabName}" auraIdListToHide="['tabDetailsHeader','tabData','questionsHomePageCmpContainer','dependentConditionListContainer','tabDetailsBtns']" cmpNavigationList="{!v.cmpNavigationList}"/> 
+            </div> 
+            <!--<div aura:id="questionsHomePageCmpContainer" class="unhideElement task-list slds-p-top-medium questionsHomePageCmpContainer">-->
+            <div aura:id="questionsHomePageCmpContainer" class="unhideElement task-list questionsHomePageCmpContainer">            
+                <c:adminQuestionsHomePageCmp tabId="{!v.tabId}" templateId="{!v.templateId}" sfObjectsList="{!v.sfObjectsList}" subTabId="{!v.subTabId}"  subTabList="{!v.subTabList}" userChoice="{!v.userChoice}" tabName="{!v.tabName}" auraIdListToHide="['tabDetailsHeader','tabData','subTabHomePageCmpContainer','dependentConditionListContainer','tabDetailsBtns']" cmpNavigationList="{!v.cmpNavigationList}"/>
+            </div>
+            <!--<div aura:id="dependentConditionListContainer" class="unhideElement task-list slds-p-top-medium dependentConditionListContainer">-->
+            <div aura:id="dependentConditionListContainer" class="unhideElement task-list dependentConditionListContainer">            
+                <!--Calling adminDependentConditionsList component-->            
+                <c:adminDependentConditionsList templateId="{!v.templateId}" name="{!v.tabName}" dependenceType="tab" Id="{!v.tabId}" sfObjectsList="{!v.sfObjectsList}" userChoice="{!v.userChoice}"  auraIdListToHide="['tabDetailsHeader','tabData','subTabHomePageCmpContainer','questionsHomePageCmpContainer','tabDetailsBtns']" cmpNavigationList="{!v.cmpNavigationList}"/>
+            </div>                
+        </aura:if>        
+        <div aura:id="tabDetailsBtns" name="divBtnsSave" class="footerTab slds-button-group slds-grid slds-grid_align-center slds-border_top slds-p-top_small slds-p-bottom_small" role="group">
+            <button class="slds-button slds-button_neutral" onclick="{!c.goToPrevious}">Back</button>           
+            <button class="slds-button slds-button_neutral" onclick="{!c.save}">Save</button>
+        </div>
+    </div>
+    <div>
+        <!--Model PopUp for Template starts -->
+        <aura:if isTrue="{!v.templatePopupBoolean}">
+            <div class="demo-only" style="height: 640px;">
+                <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                    <div class="slds-modal__container">
+                        <header class="slds-modal__header">
+                            <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close">
+                                <a onclick="{!c.closedPopUp}">X
+                                </a>
+                                <span class="slds-assistive-text">Close</span>
+                            </button>
+                            <h2 id="modal-heading-02" class="slds-text-heading_medium slds-hyphenate">Templates</h2>
+                        </header>
+                        <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-2">
+                            
+                            <div class="slds">
+                                <div class="unhideElement" aura:id="templateLists">
+                                    <section class="project-task-list slds-p-top--x-small">
+                                        <div class="task-list slds-p-top--medium">
+                                            <ldt:datatableDev title="Template Details" aura:id="templateListTable" dataRows="{!v.templateList}" header="{!v.templateColumnsList}" config="{!v.templateTableConfigurationMap}"/>         
+                                            
+                                        </div>      
+                                        
+                                    </section>
+                                    
+                                </div>
+                                
+                            </div>
+                            
+                        </div>
+                        
+                        <footer class="slds-modal__footer">
+                            
+                            <lightning:button variant="neutral" label="Cancel" onclick="{!c.closedPopUp}"/>
+                            
+                        </footer>
+                        
+                    </div>
+                    
+                </section>
+                
+                <div class="slds-backdrop slds-backdrop_open"></div>
+                
+            </div>
+            
+        </aura:if>
+        
+        <!--Model PopUp for Template ends -->
+        
+    </div>
+    <div>
+        {!v.body}
+    </div>
+    
+</aura:component>

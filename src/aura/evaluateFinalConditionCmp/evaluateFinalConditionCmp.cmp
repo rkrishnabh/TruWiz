@@ -1,0 +1,13 @@
+<aura:component >
+    <aura:method name="evaluateFinalCondition" action="{!c.evaluateFinalCondition}" >
+        <aura:attribute name="conditionalColumvalue" type="string"/>        
+        <aura:attribute name="callBack" type="function"/>        
+    </aura:method>
+    <aura:method name="evaluateConditionString" action="{!c.evaluateConditionString}" >
+        <aura:attribute name="conditionStr" type="string"/>       
+    </aura:method>
+    <aura:method name="calculateSingleCondition" action="{!c.calculateSingleCondition}" >
+        <aura:attribute name="str" type="string"/>
+        <aura:attribute name="currentIndex" type="Integer"/>        
+    </aura:method>    
+</aura:component>

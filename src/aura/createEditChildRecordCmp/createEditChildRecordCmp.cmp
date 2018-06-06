@@ -1,0 +1,213 @@
+<aura:component controller="dynamicWizard" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global">
+    
+    <aura:handler name="init" value="{!this}" action="{!c.loadCreateEditChildRecord}"/>
+    <!--Calling Validation-Start-->
+    <c:validationsCmp aura:id="validationsCmp"/>
+    <!--Calling Validation-End-->
+    <aura:attribute name="tabName" type="string" />
+    <aura:attribute name="subTabName" type="string" />
+    <aura:attribute name="popUpMode" type="string" />
+    <aura:attribute name="metaDataMap" type="map" />     
+    <aura:attribute name="dataExist" type="boolean" default="false" />
+    <aura:attribute name="showPopUp" type="boolean" default="false" />
+    <aura:attribute name="pickListDataList" type="list"/>
+    <aura:attribute name="questionsList" type="list"/>
+    <aura:attribute name="selectedQuesSeq" type="string"/>    
+    <aura:attribute name="errorMessage" type="string" default=""/>
+    <aura:attribute name="subTabFieldApiName" type="String"/>
+    <aura:attribute name="subTabFilteringValue" type="String"/>    
+    
+    <!--Getting Values from selectedsObjectRecordEvent -start-->
+    <aura:handler name="oSelectedRecordEvent" event="c:selectedsObjectRecordEvent" action="{!c.captureSelectedLookUpValEvent}"/> 
+    <!--Getting Values from selectedsObjectRecordEvent -end-->    
+    <aura:registerEvent name="childPopUpEvent" type="c:childPopUpEvent"/>
+    <aura:if isTrue="{!v.showPopUp}">
+        <div class="demo-only" style="height: 640px;">
+            <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                <div class="slds-modal__container">
+                    <header class="slds-modal__header">
+                        <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close">
+                            <a onclick="{!c.closePopUp}">X
+                            </a>
+                            <span class="slds-assistive-text">Close</span>
+                        </button>
+                        <h2 id="modal-heading-02" class="slds-text-heading_medium slds-hyphenate">Insert New Record</h2>
+                    </header>
+                    <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-2">
+                        <div class="slds-page-header">          
+                            <div class="slds-media">
+                                <div class="slds-media__figure">
+                                    <span class="slds-icon_container slds-icon-standard-opportunity" title="Description of icon when needed">
+                                        <lightning:icon iconName="custom:custom84" size="small" alternativeText="Indicates approval"/>
+                                    </span>
+                                </div>
+                                <div class="slds-media__body">
+                                    <h3 class="slds-page-header__title slds-truncate slds-align-middle" title="Rohde Corp - 80,000 Widgets"><ui:outputText value="{!v.subTabName}" /></h3>
+                                </div>                    
+                            </div>
+                            <div>
+                                <div>
+                                    <div class="slds-grid slds-wrap">
+                                        <aura:iteration items="{!v.questionsList}" var="questions" >                           
+                                            <aura:if isTrue="{!questions.Has_Condition__c == false}">                              
+                                                <!--<div class="{!questionsListForDisplay.CssClasses}">-->
+                                                <div class="slds-p-horizontal--small slds-size--1-of-2 slds-large-size--1-of-2 slds-medium-size--1-of-2 slds-small-size--1-of-2 slds-m-bottom--small" >                                
+                                                    <aura:if isTrue="{!questions.Help_Text__c != null}">
+                                                        <lightning:helptext content="{!questions.Help_Text__c}" />
+                                                    </aura:if>
+                                                    <!--Text-->                                        
+                                                    <aura:if isTrue="{!questions.Field_Type__c == 'STRING'}" >
+                                                        <div class="set97PercentWidth">
+                                                            <lightning:input label="{!questions.Question_Label__c}" name="answer" required="{!questions.IsMandatory__c}" disabled="false" minlength="{!questions.Lower_Value_Limit__c}" maxlength="{!questions.Higher_Value_Limit__c}" max="{!questions.Size__c}" readonly="{!questions.Read_Only__c}" aura:id="newAnswer" value="{!questions.Answer__c}"/>
+                                                        </div>
+                                                    </aura:if>
+                                                    
+                                                    <aura:if isTrue="{!questions.Field_Type__c == 'DOUBLE'}" > 
+                                                        <aura:if isTrue="{!questions.Has_Dependency__c == true}">
+                                                            <div id="{!questions.Id}" onclick="{!c.captureQuestionIdOnClick}" class="set97PercentWidth">
+                                                                <lightning:input type="number" name="number" label="{!questions.Question_Label__c}" required="{!questions.IsMandatory__c}" disabled="false" min="{!questions.Lower_Value_Limit__c}" max="{!questions.Higher_Value_Limit__c}" pattern="" readonly="{!questions.Read_Only__c}" value="{!questions.Answer__c}" aura:id="newAnswer" onblur="{!c.loadDependentQuestions}"/>
+                                                                <span class="{!lessthan(questions.Answer__c,questions.Lower_Value_Limit__c) == '' ? 'showValidationError' : 'hideElement'}">Value entered is low</span>
+                                                                <span class="{!greaterthan(questions.Answer__c,questions.Lower_Value_Limit__c) == '' ? 'showValidationError' : 'hideElement'}">Value entered is low</span>
+                                                            </div>
+                                                            <aura:set attribute="else">
+                                                                <div class="set97PercentWidth">                                                    
+                                                                    <lightning:input type="number" name="number" label="{!questions.Question_Label__c}" required="{!questions.IsMandatory__c}" disabled="false" min="{!questions.Lower_Value_Limit__c}" max="{!questions.Higher_Value_Limit__c}" pattern="" readonly="{!questions.Read_Only__c}" value="{!questions.Answer__c}" aura:id="newAnswer"/>
+                                                                </div>
+                                                            </aura:set>                                                    
+                                                        </aura:if>
+                                                    </aura:if>
+                                                    
+                                                    <aura:if isTrue="{!questions.Field_Type__c == 'BOOLEAN'}" > 
+                                                        <div class="slds-form-element set97PercentWidth">
+                                                            <label class="slds-form-element__label slds-no-flex">
+                                                                <span>{!questions.Question_Label__c}</span>
+                                                            </label>
+                                                            <aura:if isTrue="{!questions.Has_Dependency__c == true}">
+                                                                <div id="{!questions.Id}" onclick="{!c.captureQuestionIdOnClick}" class="set100PercentWidth">
+                                                                    <ui:inputCheckbox aura:id="newAnswer" disabled="{!questions.Read_Only__c}" value="{!questions.Answer__c }" change="{!c.loadDependentQuestions}"/>
+                                                                </div>
+                                                                <aura:set attribute="else">
+                                                                    <div class="set100PercentWidth">                                                        
+                                                                        <ui:inputCheckbox aura:id="newAnswer" disabled="{!questions.Read_Only__c}" value="{!questions.Answer__c }"/>
+                                                                    </div>
+                                                                </aura:set>
+                                                            </aura:if>
+                                                        </div>
+                                                    </aura:if>
+                                                    
+                                                    <aura:if isTrue="{!questions.Field_Type__c == 'PHONE'}" >
+                                                        <div class="set97PercentWidth">
+                                                            <lightning:input type="tel" label="{!questions.Question_Label__c}" name="tel" required="{!questions.IsMandatory__c}" readonly="{!questions.Read_Only__c}" pattern="{!questions.Input_Pattern__c}" maxlength="{!questions.Size__c}" placeholder="{!questions.Input_Placeholder__c}" value="{!questions.Answer__c}" aura:id="newAnswer" />
+                                                        </div>
+                                                    </aura:if>
+                                                    
+                                                    <!--Email-->
+                                                    <aura:if isTrue="{!questions.Field_Type__c == 'EMAIL'}" >
+                                                        <div class="set97PercentWidth">
+                                                            <lightning:input type="email" label="{!questions.Question_Label__c}" name="email" required="{!questions.IsMandatory__c}" aura:id="newAnswer" value="{!questions.Answer__c}"/>
+                                                        </div>
+                                                    </aura:if>
+                                                    
+                                                    <aura:if isTrue="{!questions.Field_Type__c == 'PICKLIST'}">                                                                                
+                                                        <aura:iteration items="{!v.pickListDataList}" var="pickListLable" indexVar="key">
+                                                            <aura:if isTrue="{!pickListLable.key == questions.Question_Label__c}">                                                   
+                                                                <aura:if isTrue="{!questions.Has_Dependency__c == true}">
+                                                                    <div id="{!questions.Id}" class="set97PercentWidth" onclick="{!c.captureQuestionIdOnClick}">
+                                                                        <ui:inputSelect label="{!pickListLable.key}" value="{!questions.Answer__c}" aura:id="newAnswer" required="{!questions.IsMandatory__c}" change="{!c.loadDependentQuestions}">
+                                                                            <ui:inputSelectOption label="" text=""></ui:inputSelectOption>
+                                                                            <aura:iteration items="{!pickListLable.value}" var="piclistValues">
+                                                                                <ui:inputSelectOption label="{!piclistValues}" text="{!piclistValues}"></ui:inputSelectOption>
+                                                                            </aura:iteration>
+                                                                        </ui:inputSelect>
+                                                                        <span aura:id="pickListValidationMsg" class="{!and(questions.Answer__c == '',questions.IsMandatory__c) ? 'showValidationError' : 'hideElement'}">Complete this field</span>                                                            
+                                                                    </div>                                                        
+                                                                    <aura:set attribute="else">
+                                                                        <div class="set97PercentWidth">
+                                                                            <ui:inputSelect label="{!pickListLable.key}" value="{!questions.Answer__c}"  required="{!questions.IsMandatory__c}" aura:id="newAnswer">
+                                                                                <ui:inputSelectOption label="" text=""></ui:inputSelectOption>
+                                                                                <aura:iteration items="{!pickListLable.value}" var="piclistValues">
+                                                                                    <ui:inputSelectOption label="{!piclistValues}" text="{!piclistValues}"></ui:inputSelectOption>
+                                                                                </aura:iteration>
+                                                                            </ui:inputSelect>
+                                                                            <span aura:id="pickListValidationMsg" class="{!questions.Answer__c == '' ? 'showValidationError' : 'hideElement'}">Complete this field</span>                                                                                                                            
+                                                                        </div>                                                        
+                                                                    </aura:set>                                                        
+                                                                </aura:if>                                                     
+                                                            </aura:if>
+                                                        </aura:iteration>
+                                                    </aura:if>
+                                                    
+                                                    <aura:if isTrue="{!questions.Field_Type__c == 'MULTIPICKLIST'}" > 
+                                                        <div class="set97PercentWidth">
+                                                            <c:customLookup lookUpDataStr="{!questions.Values__c}" multiSelectPicklistAnswers="{!questions.Answer__c}" lookUpType="{!questions.Field_Type__c}" questionId="{!questions.Id}"  IconName="standard:account"   label="{!questions.Question_Label__c}" aura:id="newAnswer" names="{!questions.Id}" max="{!questions.Higher_Value_Limit__c}" required="{!questions.IsMandatory__c}"/>                                                
+                                                        </div>
+                                                    </aura:if>
+                                                    
+                                                    <aura:if isTrue="{!questions.Field_Type__c == 'REFERENCE'}"> 
+                                                        <div class="set97PercentWidth">
+                                                            <c:customLookup questionId="{!questions.Id}" objectAPIName="{!questions.Object_API_Used_for_Lookup__c}" lookUpType="{!questions.Field_Type__c}" IconName="standard:account" selectedRecord="{!v.selectedLookUpRecord}" label="{!questions.Question_Label__c}" aura:id="newAnswer" value="{!questions.LookUpName__c}" names="{!questions.Id}" max="{!questions.Higher_Value_Limit__c}" required="{!questions.IsMandatory__c}" fieldsToBeQueried="{!questions.SelectLookupValues__c}"/>                                                
+                                                        </div>
+                                                    </aura:if>
+                                                    
+                                                    <aura:if isTrue="{!questions.Field_Type__c == 'CURRENCY'}" > 
+                                                        <aura:if isTrue="{!questions.Has_Dependency__c == true}">
+                                                            <div id="{!questions.Id}" onclick="{!c.captureQuestionIdOnClick}" class="set97PercentWidth">
+                                                                <lightning:input type="number" label="{!questions.Question_Label__c}" min="{!questions.Lower_Value_Limit__c}" max="{!questions.Higher_Value_Limit__c}" required="{!questions.IsMandatory__c}" value="{!questions.Answer__c}" formatter="currency" aura:id="newAnswer" onblur="{!c.loadDependentQuestions}"/>                                            	
+                                                            </div>
+                                                            <aura:set attribute="else">
+                                                                <div class="set97PercentWidth">                                                    
+                                                                    <lightning:input type="number" label="{!questions.Question_Label__c}" min="{!questions.Lower_Value_Limit__c}" max="{!questions.Higher_Value_Limit__c}" required="{!questions.IsMandatory__c}" value="{!questions.Answer__c}" formatter="currency" aura:id="newAnswer"/>                                            
+                                                                </div>
+                                                            </aura:set>
+                                                        </aura:if>
+                                                    </aura:if>
+                                                    
+                                                    <aura:if isTrue="{!questions.Field_Type__c == 'PERCENT'}" > 
+                                                        <aura:if isTrue="{!questions.Has_Dependency__c == true}">
+                                                            <div id="{!questions.Id}" onclick="{!c.captureQuestionIdOnClick}" class="set97PercentWidth">
+                                                                <lightning:input type="number" label="{!questions.Question_Label__c}" min="{!questions.Lower_Value_Limit__c}" max="{!questions.Higher_Value_Limit__c}" required="{!questions.IsMandatory__c}" value="{!questions.Answer__c}" formatter="percent" aura:id="newAnswer" onblur="{!c.loadDependentQuestions}"/>                                            
+                                                            </div>
+                                                            <aura:set attribute="else">
+                                                                <div class="set97PercentWidth">                                                    
+                                                                    <lightning:input type="number" label="{!questions.Question_Label__c}" min="{!questions.Lower_Value_Limit__c}" max="{!questions.Higher_Value_Limit__c}" required="{!questions.IsMandatory__c}" value="{!questions.Answer__c}" formatter="percent" aura:id="newAnswer"/>                                            
+                                                                </div>
+                                                            </aura:set>  
+                                                        </aura:if>
+                                                    </aura:if>
+                                                    
+                                                    <aura:if isTrue="{!questions.Field_Type__c == 'DATE'}" >  
+                                                        <div class="slds-form-element set97PercentWidth">
+                                                            <ui:inputDate label="{!questions.Question_Label__c}" disabled="{!questions.Read_Only__c}" value="{!questions.Answer__c}" required="{!questions.IsMandatory__c}" aura:id="newAnswer" displayDatePicker="true" format="MM/dd/yyyy" />                 
+                                                        </div>
+                                                    </aura:if>
+                                                    
+                                                    <aura:if isTrue="{!questions.Field_Type__c == 'DATETIME'}" > 
+                                                        <div class="slds-form-element set97PercentWidth">
+                                                            <ui:inputDate label="{!questions.Question_Label__c}" disabled="{!questions.Read_Only__c}" value="{!questions.Answer__c}" required="{!questions.IsMandatory__c}" aura:id="newAnswer" displayDatePicker="true" format="MM/dd/yyyy" />                                             
+                                                        </div>
+                                                    </aura:if>
+                                                    
+                                                    <aura:if isTrue="{!questions.Field_Type__c == 'TEXTAREA'}" > 
+                                                        <div class="slds-form-element set97PercentWidth">
+                                                            <lightning:textarea disabled="{!questions.Read_Only__c}" required="{!questions.IsMandatory__c}" value="{!questions.Answer__c}" label="{!questions.Question_Label__c}" maxlength="{!questions.Higher_Value_Limit__c}" minlength="{!questions.Lower_Value_Limit__c}" aura:id="newAnswer" />
+                                                        </div>
+                                                    </aura:if>                                                                           
+                                                </div>
+                                            </aura:if>                                          
+                                        </aura:iteration>
+                                    </div>
+                                    
+                                </div>      
+                            </div>
+                        </div>
+                    </div>
+                    <footer class="slds-modal__footer">
+                        <lightning:button variant="neutral" label="Add" onclick="{!c.createEditChildSave}"/>
+                        <lightning:button variant="neutral" label="Cancel" onclick="{!c.closePopUp}"/>
+                    </footer>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </div>
+    </aura:if>
+</aura:component>

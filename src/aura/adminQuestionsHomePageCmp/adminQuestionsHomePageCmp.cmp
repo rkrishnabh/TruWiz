@@ -1,0 +1,73 @@
+<aura:component controller="dynamicWizardAdmin" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global">
+    <aura:attribute name="auraIdListToHide" type="List"/>
+    <aura:attribute name="errorMessage" type="String"/>
+    <aura:attribute name="cmpNavigationList" type="String[]"/>   
+    <aura:attribute name="sfObjectsList" type="getSfObjectsList"/>
+    <aura:attribute name="subTabObj" type="WizardHeader__c" default="{'sobjectType': 'WizardHeader__c',
+                                                                     'SubTab__c': '',
+                                                                     'Tabs__c':'',
+                                                                     'Parent_Object_Name__c':'',
+                                                                     'Parent_Object_API_Name__c': '',
+                                                                     'Object_Name__c':'',
+                                                                     'Object_API_Name__c':'',
+                                                                     'Has_Condition__c':'',
+                                                                     'Condition_Filter_Logic__c': '',
+                                                                     'Form_Type__c':''                                                                     
+                                                               }"/>
+    <aura:attribute name="tabId" type="String"/>
+    <aura:attribute name="templateId" type="String"/>
+    <aura:attribute name="subTabId" type="String"/> 
+    <aura:attribute name="selectedSubTabName" type="String"/>
+    <aura:attribute name="selectedSubTabObjectName" type="String"/>
+    <aura:attribute name="selectedSubTabObjectApiName" type="String"/>
+    <aura:attribute name="selectedSubTabParentObjectName" type="String"/>
+    <aura:attribute name="selectedSubTabParentObjectApiName" type="String"/>
+    <aura:attribute name="selectedSubTabOrgParentObjectApiName" type="String"/>    
+    <aura:attribute name="selectedSubTabRelationship" type="String"/>    
+    <aura:attribute name="selectedSubTabFieldName" type="String"/>
+    <aura:attribute name="selectedSubTabFieldApiName" type="String"/>
+    <aura:attribute name="pathToSet" type="String"/>
+    <aura:attribute name="btnSaveOrNext" type="String"/>    
+    <aura:attribute name="subTabList" type="List"/>
+    <aura:attribute name="tabList" type="List" /><!--Required for Back Btn-->
+    <aura:attribute name="questionId" type="string"/>   
+    <aura:attribute name="questionsList" type="List" />
+    <aura:attribute name="selectedDeletedQuestionId" type="String"/>
+    <aura:attribute name="selectedQuestionRelatedSubTabId" type="String"/>
+    <aura:attribute name="questionsColumnsList" type="List" access="public"/>
+    <aura:attribute name="questionsTableConfigurationMap" type="Map" access="public"/>
+    <aura:attribute name="userChoice" type="String" default=""/>
+    <aura:attribute name="showButtonsNavigation" type="boolean" default="true"/>
+    <aura:attribute name="tabName" type="String"/>
+    <aura:attribute name="subtabName" type="String"/>
+    <aura:handler name="dtActionClick" event="ldt:clickedDtAction" action="{!c.questionActionClicked}"/>
+    <aura:registerEvent name="pathDataEvnt" type="c:pathDataEvnt"/>
+    <aura:registerEvent name="hideElementsEvnt" type="c:hideElementsEvnt"/>    
+    
+    <lightning:spinner variant="brand" size="large" aura:id="spinner" class="slds-hide"/>       
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>  
+    
+    <div class="slds-media__body unhideElement adminQuestionsHomePageCmpUclass" aura:id="questionsLists">
+        <div class="slds"> 
+            <!--<div class="unhideElement" aura:id="questionsLists">-->
+            <div>
+                <section class="project-task-list slds-p-top--x-small">
+                    <div class="task-list slds-p-top--medium">
+                        <ldt:datatableDev title="Questions List" aura:id="questionsListTable" dataRows="{!v.questionsList}" header="{!v.questionsColumnsList}" config="{!v.questionsTableConfigurationMap}"/>        
+                    </div>       
+                </section>
+                <aura:if isTrue="{!v.showButtonsNavigation}">
+                    <div name="divBtnsSave" class="slds-button-group slds-grid slds-grid_align-center" role="group">
+                        <button class="slds-button slds-button_neutral" onclick="{!c.goToPrevious}">Back</button>                    
+                        <button class="slds-button slds-button_neutral" onclick="{!c.navigateToHomePage}">Save and Exit</button>
+                    </div>
+                </aura:if>
+            </div>
+        </div>
+        
+    </div>
+    <div class="adminQuestionDetailsPageCmpUcontainer">
+        {!v.body}
+    </div>
+    
+</aura:component>

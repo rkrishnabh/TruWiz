@@ -1,0 +1,11 @@
+.THIS {
+    background-color: rgb(255, 255, 255);
+}
+
+.THIS .unhideElement {
+    display:block;
+}
+
+.THIS .hideElement {
+    display:none;
+}

@@ -1,0 +1,11 @@
+.THIS .unhideElement {
+    display:block;
+}
+
+.THIS .hideElement {
+    display:none;
+}
+
+.THIS .ldtdev .slds-card {
+    background: #fff;
+}

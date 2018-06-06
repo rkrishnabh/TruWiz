@@ -1,0 +1,47 @@
+<aura:component controller="dynamicWizardAdmin" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:handler name="dtActionClick" event="ldt:clickedDtAction" action="{!c.dtClickAction}"/>
+    <aura:registerEvent name="hideElementsEvnt" type="c:hideElementsEvnt"/>    
+    <lightning:spinner variant="brand" size="large" aura:id="spinner" class="slds-hide"/>
+    
+    <aura:attribute name="templateId" type="string"/>
+    <aura:attribute name="dependenceType" type="string"/>
+    <aura:attribute name="Id" type="string"/>
+    <aura:attribute name="name" type="String"/>
+    <aura:attribute name="tabName" type="String"/>
+    <aura:attribute name="subtabName" type="String"/>
+    <aura:attribute name="rowIndex" type="integer"/>
+    <aura:attribute name="dependentConditionLogic" type="string"/>
+    <aura:attribute name="selectedDepdconditionIdForDelete" type="string"/>
+    <aura:registerEvent name="conditionLogicUpdateEvent" type="c:conditionLogicUpdateEvent"/>
+   
+     
+    <!--Start Navigation related attributes-->
+    <aura:attribute name="tabId" type="String"/>
+    <aura:attribute name="tabList" type="List" />
+    <aura:attribute name="subTabId" type="string" />
+    <aura:attribute name="subTabList" type="List" />    
+    <aura:attribute name="sfObjectsList" type="getSfObjectsList"/>
+    <aura:attribute name="userChoice" type="string"/>   
+    <aura:attribute name="cmpNavigationList" type="String[]"/>
+    <aura:attribute name="auraIdListToHide" type="List"/>
+    <!--End Navigation related attributes-->
+    
+    <!--Data Table attributes-->
+    <aura:attribute name="dependentConditionsList" type="List" />
+    <aura:attribute name="dependentConditionsColumnList" type="List" access="public"/>
+    <aura:attribute name="dependentConditionsTablebuttonsList" type="Map" access="public"/> 
+    <!--Data Table attributes ends-->
+    
+    <div class="unhideElement" aura:id="dependentconditionsListDiv">
+        <div class="task-list slds-p-top--medium">
+            <ldt:datatableDev title="Dependent Conditions List" aura:id="dependentconditionsListTable" dataRows="{!v.dependentConditionsList}" header="{!v.dependentConditionsColumnList}" config="{!v.dependentConditionsTablebuttonsList}"/>        
+        </div> 
+    </div>
+    
+    <div>
+        {!v.body}
+    </div>
+    
+</aura:component>

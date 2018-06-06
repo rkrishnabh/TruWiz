@@ -1,0 +1,66 @@
+<aura:component controller="dynamicWizardAdmin" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global">
+                
+    <lightning:spinner variant="brand" size="large" aura:id="spinner" class="slds-hide" alternativeText="Loding..."/>
+    <!--Start Back scenario-->
+    <aura:attribute name="cmpInvocationStack" type="String[]"/>    
+    <aura:attribute name="cmpBack" type="String" default=""/>
+    <aura:attribute name="cmpBackParent" type="String" default=""/>    
+    <aura:attribute name="subTabListBack" type="String" default=""/>
+    <aura:attribute name="tabListBack" type="String" default=""/>
+    <aura:attribute name="templateIdBack" type="String" default=""/>
+    <aura:attribute name="tabIdBack" type="String" default=""/>
+    <aura:attribute name="subTabIdBack" type="String" default=""/>
+    <aura:attribute name="questionIdBack" type="String" default=""/>    
+    <aura:attribute name="selectedsubTabNameBack" type="String" default=""/>    
+                <!--End Back scenario-->    
+    
+    <aura:attribute name="tabList" type="List" />
+    <aura:attribute name="templateId" type="String" />
+    <aura:attribute name="bropped" type="boolean" default="true" />
+    <aura:handler name="change" value="{!v.bropped}" action="{!c.upDateSequence}"/>
+     
+        <ltng:require afterScriptsLoaded="{!c.scriptLoaded}" scripts="{!join(',',
+                                                                  $Resource.Jquery,
+                                                                  $Resource.JqueryTheme
+                                                                  )}"/>
+      
+ <div class="unhideElement" aura:id="tabSequence"> 
+     <div class="headerSection slds-p-bottom_small slds-border_bottom">
+        <h2 class="title slds-text-heading--medium slds-text-align_center" id="titleNewTab">Tab List</h2>
+    </div>
+    <table id="sortable" class="slds-table slds-table_bordered slds-table_cell-buffer tabsDt">
+    <thead>
+      <!--<tr class="slds-text-heading-label">-->
+        <th scope="col" style= "display:none"><div class="slds-truncate tabsTHead" title="ID" >ID</div></th>
+        <th scope="col"><div class="slds-truncate tabsTHead" title="Name">Name</div></th>
+        <th scope="col"><div class="slds-truncate tabsTHead" title="Template">Template</div></th>
+        <th scope="col"><div class="slds-truncate tabsTHead" title="Sequence">Sequence</div></th>
+      <!--</tr>-->
+    </thead>
+  
+      <!-- Use the Apex model and controller to fetch server side data -->
+      <aura:iteration items="{!v.tabList}" var="tabs">
+        <tr class="slds-text-title_caps" style="cursor:pointer">
+          <td id="tab_id" scope="row" style= "display:none"><div class="slds-truncate" title="{!tabs.Id}">{!tabs.Id}</div></td>
+          <td class="slds-truncate sortable tabsTd"><div class="slds-truncate" title="{!tabs.Name}">{!tabs.Name}</div></td>
+          <td class="slds-truncate sortable tabsTd"><div class="slds-truncate" title="{!tabs.Template__r.Name}">{!tabs.Template__r.Name}</div></td>
+          <td class="slds-truncate sortable tabsTd"><div class="slds-truncate" title="{!tabs.Sequence__c}">{!tabs.Sequence__c}</div></td>
+          
+        </tr>
+      </aura:iteration>
+  
+     </table><br/>
+     <h1>Note: Please Drag and Drop to change the sequence</h1><br/>
+    <div name="divBtnsSave" class="slds-button-group slds-grid slds-grid_align-center" role="group">
+    <lightning:button variant="neutral" label="Back" onclick="{!c.goToPrevious}"/>
+      <!--<lightning:button variant="neutral" label="Save Tab Sequence" onclick="{!c.upDateSequence}"/>-->
+      </div> 
+     
+    
+     
+     
+      </div>  
+     <div>
+        {!v.body}
+    </div>
+</aura:component>

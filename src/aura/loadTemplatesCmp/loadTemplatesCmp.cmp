@@ -1,0 +1,28 @@
+<aura:component controller="dynamicWizard" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global">
+    <aura:handler name="init" value="{!this}" action="{!c.loadAllTemplatesRelToObject}"/>
+    <aura:attribute name="recordId" type="Id" />
+    <aura:attribute name="templateList" type="List" />
+    <aura:attribute name="templateColumnsList" type="List" access="public"/>
+    <aura:attribute name="templateTableConfigurationMap" type="Map" access="public"/>
+    <aura:handler name="dtActionClick" event="ldt:clickedDtAction" action="{!c.templateActionClicked}"/>
+    <lightning:spinner variant="brand" size="large" aura:id="spinner" class="slds-hide"/>
+    
+    <aura:if isTrue="{!v.templateList != null}">
+        <div aura:id="templateLists"> 
+            <section class="project-task-list slds-p-top--x-small">
+                <div class="task-list slds-p-top--medium">
+                    <ldt:datatableDev title="Please choose the template from below list to launch the wizard " aura:id="templateListTable" dataRows="{!v.templateList}" header="{!v.templateColumnsList}" config="{!v.templateTableConfigurationMap}"/>        
+                </div>       
+            </section>            
+        </div>
+        <aura:set attribute="else">
+            <c:globalTabsCmp recordId="{!v.recordId}"/>
+            
+        </aura:set>
+    </aura:if>
+        
+    <div>
+        {!v.body}
+    </div>
+    
+</aura:component>

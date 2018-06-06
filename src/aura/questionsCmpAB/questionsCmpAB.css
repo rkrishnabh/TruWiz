@@ -1,0 +1,79 @@
+.THIS {
+
+}
+
+.THIS .slds-accordion__summary-heading{
+    order:2;
+}
+
+.THIS .slds-accordion__summary-action{
+    justify-content: flex-end;
+}
+
+.THIS .slds-icon-utility-clear{
+    order: 3;
+}
+
+.THIS .ldtdev{
+    margin-bottom: .5rem;
+}
+
+.THIS.questionAddBtn .lightningPrimitiveIcon{
+    padding-left: .5rem;
+}
+
+.THIS .slds-page-header__title{
+    display:inline;
+}
+
+/*Help Text positioning*/
+.THIS .mainQuestionContainer lightning-helptext{
+    order : 1;
+}
+
+.THIS .classPicklistQuestion{
+    width: 97%;
+}
+
+/*.THIS .lightningInput{
+    width: 97%;
+}*/
+
+.THIS .set97PercentWidth{
+    width: 97%;
+}
+
+.THIS .set100PercentWidth{
+    width: 100%;
+}
+
+/*.THIS .setFontSize{
+    font-size: .8125rem;
+}*/
+
+.THIS.setFontSize .slds-form-element__label{
+	font-size: .8125rem;
+}
+
+.THIS.setFontSize .slds-form-element__label span{
+	font-size: .8125rem;
+}
+
+.THIS.setFontSize .form-element__label span{
+	font-size: .8125rem;
+}
+
+.THIS .unhideElement {
+    display:block;
+}
+
+.THIS .hideElement {
+    display:none;
+}
+
+.THIS .showValidationError{
+    display:block;
+    color: rgb(194, 57, 52);
+    font-size: .75rem;
+    margin-top: .5rem;
+}

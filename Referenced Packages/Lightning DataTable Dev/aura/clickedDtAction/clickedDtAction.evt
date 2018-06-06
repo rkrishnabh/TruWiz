@@ -1,0 +1,5 @@
+<aura:event type="COMPONENT" description="Click event of datatable" access="global">
+    <aura:attribute name="actionId" type="String"/>
+    <aura:attribute name="row" type="Object" />
+    <aura:attribute name="index" type="Integer" />
+</aura:event>

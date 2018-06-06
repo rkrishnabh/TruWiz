@@ -1,0 +1,19 @@
+<aura:component access="public">
+    <aura:attribute name="row" type="Map" access="public"/>
+    <aura:attribute name="rows" type="List" access="public"/>
+    <aura:attribute name="rowIndex" type="Integer" access="public"/>
+    <aura:attribute name="columns" type="List" access="public"/>
+    <aura:attribute name="selectedRows" type="List" access="public"/>
+    <aura:attribute name="unSelectedRows" type="List" access="public"/>
+    <aura:attribute name="selected" type="Boolean" default="false" access="public"/>
+    <aura:attribute name="config" type="Map" access="public"/>
+    <aura:attribute name="selectAll" type="Boolean" access="public"/>
+    <aura:attribute name="rowContent" type="List" access="private"/>
+    <aura:handler name="init" value="{!this}" action="{!c.generateRowContent}"/>
+
+    <tr>
+ 
+        
+    </tr>
+    	
+</aura:component>

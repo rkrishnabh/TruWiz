@@ -1,0 +1,226 @@
+<aura:component access="global">
+    
+    <ltng:require scripts="{!join(',',
+                    $Resource.ldt__columnResizer,
+                    $Resource.ldt__lodash + '/js/lodash.min.js',
+                    $Resource.ldt__momenttz + '/moment-timezone/moment-with-locales.min.js',
+                    $Resource.ldt__momenttz + '/moment-timezone/moment-timezone-with-data-2010-2020.min.js'
+                )}" 
+                  styles="{!$Resource.ldt__SLDS202 + '/assets/styles/salesforce-lightning-design-system-ltng.min.css'}"
+                  afterScriptsLoaded="{!c.setLodashLoaded}"/>
+    <aura:attribute name="title" type="String" access="global" description="title of the table component"/>
+    <aura:attribute name="titleClass" type="String" access="global" default="" description="class to be applied to the title"/>
+    <aura:attribute name="titleIcon" type="String" access="global" description="slds standard icon to be displayed in the card icon title"/>
+    <aura:attribute name="titleIconURL" type="String" access="global" description="url used to displayed in the card icon title"/>
+
+    <aura:attribute name="header" type="List" access="global" default="[]" description="contains columns information to be displayed"/>
+    <aura:attribute name="dataRows" type="List" access="global" default="[]" description="actual rows supplied to the component"/>
+    <aura:attribute name="config" type="Map" access="global"  description="contains action/control configuration"/>
+    <aura:attribute name="selectedRows" type="List" access="global" default="[]" description="contains checked rows"/>
+    <aura:attribute name="unSelectedRows" type="List" access="public" default="[]" description="contains unchecked rows"/>
+    
+    <aura:attribute name="_columns" type="List" access="public" description="copy of column data supplied to the component"/>
+    <aura:attribute name="rowsToDisplay" type="List" access="public" default="[]" description="contains actual rows displayed in the view"/>
+    <aura:attribute name="sortOrder" type="String" access="public" description="contains sort order info"/>
+    <aura:attribute name="sortColumn" type="Map" default="{'label':'','name':''}" access="public" description="contains sort columns info"/>
+    
+    <aura:attribute name="_rows" type="List" access="private" description="contains copy of actual rows provided to the component"/>
+    <aura:attribute name="limit" type="Integer" access="private" default="10" description="no.of records to be displayed in the view"/>
+    <aura:attribute name="offset" type="Integer" access="private" default="0"/>
+    <aura:attribute name="searchTxt" type="String" access="private" description="text to be searched in the rows"/>
+    <aura:attribute name="searchByCol" type="String" default="" access="private" description="column selected for searching"/>
+    <aura:attribute name="showDtView" type="Boolean" access="private" default="false" description="flag to show/hide the table"/>
+    <aura:attribute name="init" type="Boolean" access="private" default="false" description="flag to indicate initialize method is called"/>
+    <aura:attribute name="initConfig" type="Map" access="private" default="{}" description="contains copy of config provided to the component"/>
+    <aura:attribute name="lodashLoaded" type="Boolean" access="private" default="false" description="flag to indicate loadash,moment library is loaded"/>
+    <aura:attribute name="selectAll" type="Boolean" access="private" default="false" description="flag to select/unselect all rows"/>
+    <aura:attribute name="reRender" type="Boolean" access="private" default="false" description="flag to indicate when to render rows"/>
+    <aura:attribute name="initializeDone" type="Boolean" access="private" default="false" description="flag to indicate initialize is called or not"/>
+    <aura:attribute name="nonPopoverActions" type="List" access="private" description="list of non-popover action"/>
+    <aura:attribute name="popoverActions" type="List" access="private" description="list of for popover action"/>
+    
+    <aura:handler name="sortColumnByEvt" event="ldt:sortColumnBy" action="{!c.sortColumn}"/>
+    
+    <!-- action click event -->
+    <aura:registerEvent name="dtActionClick" type="ldt:clickedDtAction"/>
+
+    <aura:registerEvent name="finishedColumnSortring" type="ldt:doneSortingColumn" />
+    
+    <!-- public api methods -->
+    <aura:method name="initialize" action="{!c.initialize}" access="global">
+        <aura:attribute name="initConfig" type="Map" access="global"/>
+    </aura:method>
+    <aura:method name="addRow" action="{!c.addRow}" access="global">
+        <aura:attribute name="row" type="Map"/>
+    </aura:method>
+    <aura:method name="deleteRow" action="{!c.deleteRow}" access="global">
+        <aura:attribute name="index" type="Integer"/>
+    </aura:method>
+    <aura:method name="updateRow" action="{!c.updateRow}" access="global">
+        <aura:attribute name="index" type="Integer"/>
+        <aura:attribute name="row" type="Map"/>
+    </aura:method>
+    <aura:method name="updateRowByKey" action="{!c.updateRowByUniqueKey}" access="global">
+        <aura:attribute name="label" type="String"/>
+        <aura:attribute name="value" type="String"/>
+        <aura:attribute name="row" type="Map"/>
+    </aura:method>
+    <aura:method name="deleteRowByKey" action="{!c.deleteRowByUniqueKey}" access="global">
+        <aura:attribute name="label" type="String"/>
+        <aura:attribute name="value" type="String"/>
+        <aura:attribute name="row" type="Map"/>
+    </aura:method>
+    <aura:method name="rerenderRows" action="{!c.reInitialize}" access="global"/>
+    
+    <div class="ldtdev">
+        <div class="{!(v.showDtView)? 'slds-card':'slds-hide'}">
+            <div class="slds-card__header slds-grid">
+                <!-- table title begin -->
+                <div class="slds-media slds-media--center slds-has-flexi-truncate">
+                    <div class="slds-media__figure">
+                        <aura:if isTrue="{!not(empty(v.titleIcon))}">
+                            <lightning:icon iconName="{!v.titleIcon}" size="small" alternativeText="Title icon"/>
+                        </aura:if>
+                        <aura:if isTrue="{!not(empty(v.titleIconURL))}">
+                            <img src="{!v.titleIconURL}" height="24" width="24" class="titleIcon"/>
+                        </aura:if>
+                    </div>
+                    <div class="slds-media__body slds-truncate">
+                        <h2>
+                            <span class="{!(v.titleClass != '') ? v.titleClass : 'slds-text-heading--small'}">{!v.title}</span>
+                        </h2>
+                    </div>
+                </div>
+                <!-- table title end -->
+                
+                <!-- table actions holder -->
+                <div aura:id="dtTableActions" class="slds-no-flex"></div>
+            </div>
+            
+            <div class="slds-card__body slds-text-align--center">
+                <div aura:id="dtTable" class="contents">
+                    <div class="slds-grid slds-wrap slds-grid--vertical-align-center slds-p-bottom--small">
+                        <!-- rows per page begin -->
+                        <div class="slds-col slds-size--1-of-1 slds-small-size--1-of-1 slds-medium-size--1-of-5 slds-large-size--1-of-5">
+                            <div aura:id="itemMenuContainer" class="{!and(v.config.paginate, v.config.itemMenuPosition == 'top') ? 'itemMenuContainer' : 'slds-hide'}">
+                                <ui:inputSelect aura:id="itemsPerPageTop" class="slds-select itemMenu" label="{!$Label.ldt.Items_Per_Page}" change="{!c.limitChange}">
+                                </ui:inputSelect>
+                            </div>
+                        </div>
+                        <!-- rows per page end -->
+                        <div class="slds-col slds-size--1-of-1 slds-small-size--1-of-1 slds-medium-size--1-of-5 slds-large-size--1-of-5"></div>
+                        <div class="slds-col slds-size--1-of-1 slds-small-size--1-of-1 slds-medium-size--1-of-5 slds-large-size--1-of-5"></div>
+                        <!-- searchby column begin -->
+                        <div class="slds-col slds-size--1-of-1 slds-small-size--1-of-1 slds-medium-size--1-of-5 slds-large-size--1-of-5">
+                            <div class="{!v.config.searchByColumn == true ? 'searchColumn' : 'slds-hide'}">
+                                <ui:inputSelect change="{!c.searchRowByColumn}" class="slds-select searchByCol" label="{!$Label.ldt.Search_By_Column}">
+                                    <ui:inputSelectOption text="" label="--None--"/>
+                                    <aura:iteration items="{!v._columns}" var="col">
+                                        <ui:inputSelectOption text="{!col.name}" label="{!col.label}" />
+                                    </aura:iteration>
+                                </ui:inputSelect>                                
+                            </div>
+                        </div>
+                        <!-- searchby column end -->
+                        
+                        <!-- search box begin -->
+                        <div class="slds-col slds-size--1-of-1 slds-small-size--1-of-1 slds-medium-size--1-of-5 slds-large-size--1-of-5">
+                            <aura:if isTrue="{!v.config.searchBox == true}">
+                                <div class="search-box">
+                                    <ui:inputText value="{!v.searchTxt}" label="{!$Label.ldt.Search}" class="slds-input search-input" updateOn="keyup,keydown" keyup="{!c.searchForText}" keydown="{!c.cancelSearch}"/>
+                                </div>
+                            </aura:if>
+                        </div>
+                        <!-- search box end -->
+                    </div>
+                    
+                    <!-- select all for mobile/tab begin -->
+                    <aura:if isTrue="{!and(v.config.massSelect,or($Browser.isTablet,$Browser.isPhone))}">
+                        <div class="selectallmobile" >
+                            <div class="slds-float--right">
+                                <div class="slds-form-element">
+                                    <div class="slds-form-element__control">
+                                        <span class="slds-checkbox">
+                                            <label class="slds-checkbox__label">
+                                                <input type="checkbox" aura:id="selectAllCmp" onchange="{!c.toggleSelectAll}"/>
+                                                <span class="slds-checkbox--faux"></span>
+                                                <span class="slds-form-element__label">{!$Label.ldt.Select_All}</span>
+                                            </label>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </aura:if>   
+                    <!-- select all for mobile/tab end -->
+                    
+                    <table id="{!globalId}" class="slds-table slds-table--bordered slds-table--fixed-layout box slds-max-medium-table--stacked-horizontal" aura:id="tableContent">
+                        <thead>
+                            <tr class="slds-text-heading--label">
+                                
+                                <!-- select all checkbox begin -->
+                                <aura:if isTrue="{!v.config.massSelect}">
+                                    <th style="width: 48px;" class="selectAll">
+                                        <div class="slds-form-element">
+                                            <div class="slds-form-element__control">
+                                                <span class="slds-checkbox">
+                                                    <label class="slds-checkbox__label">
+                                                        <input type="checkbox" aura:id="selectAllCmp" onchange="{!c.toggleSelectAll}"/>
+                                                        <span class="slds-checkbox--faux"></span>
+                                                    </label>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </th>
+                                </aura:if>
+                                <!-- select all checkbox end -->
+                                
+                                <!-- action header begin -->
+                                <aura:if isTrue="{!not(empty(v.nonPopoverActions))}">
+                                    <th title="{!$Label.ldt.Action_Column}" class="action">{!$Label.ldt.Action_Column}</th>
+                                </aura:if>
+                                <!-- action header end -->
+                                
+                                <aura:iteration items="{!v._columns}" var="column" indexVar="colIndex">
+                                    <ldt:dtColumn aura:id="colHeader" column="{!column}" sortColumn="{!v.sortColumn}" sortOrder="{!v.sortOrder}"/>
+                                </aura:iteration>
+                                
+                                <!-- action menulist begin -->
+                                <aura:if isTrue="{!not(empty(v.popoverActions))}">
+                                    <th class="menuaction"></th>
+                                </aura:if>
+                                <!-- action menulist end -->
+                            </tr>
+                        </thead>
+                        <tbody aura:id="tbody">
+                        </tbody>
+                    </table>
+                    
+                </div>
+            </div>
+            <div class="slds-card__footer">
+                <div class="{!v.config.paginate == true ? 'slds-grid slds-wrap' : 'slds-hide'}">
+                    <div aura:id="itemMenuContainer" class="{!v.config.itemMenuPosition == 'bottom' ? 'slds-col slds-size--1-of-1 slds-small-size--1-of-1 slds-medium-size--1-of-5 slds-large-size--1-of-5':'slds-hide'}">
+                        <div class="itemMenuContainer">
+                            <ui:inputSelect aura:id="itemsPerPageBtm" class="slds-select itemMenu" label="{!$Label.ldt.Items_Per_Page}" labelClass="labelCls" change="{!c.limitChange}">
+                            </ui:inputSelect>
+                        </div> 
+                    </div>
+                    <div class="{!v.config.itemMenuPosition == 'bottom' ? 'slds-col slds-size--1-of-1 slds-small-size--1-of-1 slds-medium-size--1-of-5 slds-large-size--1-of-5':'slds-hide'}">
+                    </div>
+                    <div class="slds-col slds-size--1-of-1 slds-small-size--1-of-1 slds-medium-size--1-of-5 slds-large-size--1-of-5">
+                    	<div aura:id="pageInfo" class="{!v.config.itemMenuPosition == 'top' ? 'slds-text-align--left paginginfo' : 'slds-text-align--center paginginfo pagetopfix'}">{!$Label.ldt.Pagination_Info}</div>
+                    </div>
+                    <div class="slds-col slds-size--1-of-1 slds-small-size--1-of-1 slds-medium-size--1-of-5 slds-large-size--1-of-5">
+                    </div>
+                    <div aura:id="pageNumber" class="slds-col slds-size--1-of-1 slds-small-size--1-of-1 slds-medium-size--1-of-5 slds-large-size--1-of-5">
+                        <div class="{!v.config.itemMenuPosition == 'bottom' ? 'pagenumbers pagetopfix':'pagenumbers'}">
+                            <button onclick="{!c.previous}" class="slds-button slds-button--brand previous" disabled="{!v.offset == 0 ? 'disabled':''}">{!$Label.ldt.Page_Prev}</button>
+                            <button onclick="{!c.next}" class="slds-button slds-button--brand next" disabled="{! v.offset + v.limit >= (v._rows.length) || (v._rows.length == v.limit) ? 'disabled':''}">{!$Label.ldt.Page_Next}</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</aura:component>

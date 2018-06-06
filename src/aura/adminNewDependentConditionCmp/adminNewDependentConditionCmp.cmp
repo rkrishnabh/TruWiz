@@ -1,0 +1,320 @@
+<aura:component controller="dynamicWizardAdmin" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global">
+             
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/> 
+    <aura:attribute name="templateId" type="String"/>
+    <aura:attribute name="dependenceType" type="string"/>
+    <aura:attribute name="Id" type="string"/>
+    <aura:attribute name="name" type="string"/>
+    <aura:attribute name="tabName" type="string"/>
+    <aura:attribute name="subtabName" type="string"/>
+    <aura:attribute name="ConditionObj" type="Condition__c"/> 
+    <aura:attribute name="ConditionList" type="Condition__c[]"/>
+    <aura:attribute name="conditionalColumn" type="string" />
+    <aura:attribute name="rowIndex" type="integer" default=""/>
+    <aura:attribute name="errorMessage" type="String"/> 
+    <aura:attribute name="duplicateDependentQuestion" type="string"/> 
+    <aura:attribute name="allQuestions" type="List" />
+    <aura:attribute name="filteringPicklistValuesList" type="List" />  
+    <aura:attribute name="dependentQuestionPickListValuesList" type="List" />
+    <aura:attribute name="conditionalQuestionId" type="string" />
+    <aura:attribute name="copyQuestionValue" type="string"/>
+    <aura:attribute name="dependentQuestionFieldType" type="string"/>
+    <aura:attribute name="selectedDepdconditionIdForDelete" type="string"/> 
+    <aura:attribute name="enableTextBox" type="boolean" default="false"/>
+    <aura:attribute name="enableMultiSelectPicklist" type="boolean" default="False"/>
+    <aura:attribute name="picklistValuesForBoolean" type="list" default="true,false"/>
+    <aura:attribute name="picklistForBoolean" type="boolean" default="false"/> 
+    <aura:attribute name="preDefaultShowOrHide" type="boolean" default="false"/> 
+    <aura:attribute name="mandatoryShowOrHide" type="boolean" default="false"/>
+    <aura:attribute name="staticValueField" type="boolean" default="false"/>
+    <aura:attribute name="CopyFromDependentQuestionField" type="boolean" default="false"/>
+    <aura:attribute name="hideOrShowfilteringPicklistField" type="boolean" default="false"/> 
+    <aura:attribute name="hideOrShowTypePicklistFiltering" type="boolean" default="false"/>
+    <aura:attribute name="lastRecordOfTypePicklistOrPredefault" type="boolean" default="true"/>
+    <lightning:spinner variant="brand" size="large" aura:id="spinner" class="slds-hide"/> 
+    
+   
+    <!--Tab Details fields--> 
+    <aura:attribute name="tabIdDep" type="String"/>
+    <aura:attribute name="tabListDep" type="List" />
+    <!--Sub Tab Datatable-->
+    <aura:attribute name="subTabIdDep" type="string" />
+    <aura:attribute name="subTabListDep" type="List" />
+   
+    <!--Start Navigation related attributes-->
+    <aura:attribute name="tabId" type="String"/>
+    <aura:attribute name="tabList" type="List" />
+    <aura:attribute name="subTabId" type="string" />
+    <aura:attribute name="subTabList" type="List" />    
+    <aura:attribute name="sfObjectsList" type="getSfObjectsList"/>
+    <aura:attribute name="userChoice" type="string"/>   
+    <aura:attribute name="cmpNavigationList" type="String[]"/>
+    <!--End Navigation related attributes-->    
+    
+    <div class="unhideElement" aura:id="createConditionalDependency">        
+        
+        <div id="divHeaderNewQuestion" class="headerTab slds-p-bottom_small slds-border_bottom">
+            <h2 class="title slds-text-heading--medium slds-text-align_center" id="titleNewTab">New Conditional Dependency for {!v.name}</h2>
+        </div>         
+        
+        <div id="divQuestionFields" class="slds-m-top_medium" >
+            <div class="slds-form slds-form_compound" aura:id="template">
+               <div class="boxShdowborder"> 
+                <fieldset class="slds-form-element">
+                    <div class="slds-form-element__group">
+                        <div class="slds-form-element__row">
+                            <div class="slds-form-element slds-size_1-of-2">
+                                <lightning:select name="Tabs" label="Select a Tab:" aura:id="tabListSelect" onchange="{!c.handleTabChange}" required="true">
+                                    <option  value="">--None--</option>
+                                    <aura:iteration items="{!v.tabListDep}" var="option">
+                                        <!--<option text="{!item.label}" value="{!item.value}"/>-->
+                                        <option  value="{!option.Id}">{!option.Tab_Name__c}</option>
+                                    </aura:iteration>
+                                </lightning:select>       
+                            </div>
+                            <div class="slds-form-element slds-size_1-of-2">
+                                <lightning:select name="SubTabs" label="Select a Sub Tab:" aura:id="subTabListSelect" onchange="{!c.handleSubTabChange}" required="true">
+                                    <option  value="">--None--</option>
+                                    <aura:iteration items="{!v.subTabListDep}" var="item">
+                                         <option  value="{!item.Id}">{!item.SubTab__c}</option>
+                                        <!--option text="{!item.SubTab__c}" value="{!item.Id}"/-->
+                                    </aura:iteration>
+                                </lightning:select>    
+                            </div>  
+                        </div>
+                    </div>   
+                </fieldset> 
+                   
+                   <fieldset class="slds-form-element">
+                       <div class="slds-form-element__group">
+                           <div class="slds-form-element__row">
+                               <div class="slds-form-element slds-size_1-of-2">
+                                   <lightning:select name="Dependent Question Name " label="Dependent Question Name"  aura:id="questionName" onchange="{!c.handleDependentQuestionChange}" required="true">
+                                       <option  value="">--None--</option>
+                                       <aura:iteration items="{!v.allQuestions}" var="option">
+                                           <option  value="{!option.Id}" >{!option.Question_Label__c}</option>
+                                       </aura:iteration>
+                                   </lightning:select>
+                               </div>
+                               
+                               <div class="slds-form-element slds-size_1-of-2">
+                                   <lightning:select name="Operator Name " label="Conditional Operator"  aura:id="operatorName" required="true">
+                                       <option  value="">--None--</option>
+                                       <option  value="=">=</option>
+                                       <option  value="!=">!=</option>
+                                       <option  value="Less Than">&lt;</option>
+                                       <option  value=">">&gt;</option>
+                                       <option  value="contains">contains</option>
+                                       <option  value="not contains">not contains</option>      
+                                   </lightning:select>
+                               </div>  
+                           </div>
+                       </div>  
+                   </fieldset>
+                   
+                   <fieldset class="slds-form-element">
+                       <div class="slds-form-element__group">
+                           <div class="slds-form-element__row">
+                               <div class="slds-form-element slds-size_1-of-2">
+                                   <aura:if isTrue="{!v.dependenceType == 'question'}">
+                                       <lightning:select name="Type " label="Type"  aura:id="type" onchange="{!c.hideOrShowPreDefault}" required="true">
+                                           <option  value="">--None--</option>
+                                           <option  value="Show or Hide">Show or Hide</option>
+                                           <aura:if isTrue="{!v.hideOrShowTypePicklistFiltering}">
+                                               <option  value="Picklist Filtering">Picklist Filtering</option>
+                                           </aura:if>
+                                           <option  value="PreDefault">PreDefault</option>
+                                           <option  value="Mandatory">Mandatory</option>
+                                       </lightning:select>
+                                   </aura:if>
+                                   <div class="slds-hide">
+                                       <aura:if isTrue="{!v.dependenceType == 'tab'}">
+                                           <lightning:input type="text" label="Type" name="Type" aura:id="tabType" value="Show or Hide" readonly="true"/>    
+                                       </aura:if>
+                                       <aura:if isTrue="{!v.dependenceType == 'subTab'}">
+                                           <lightning:input type="text" label="Type" name="Type" aura:id="subTabType" value="Show or Hide" readonly="true"/>    
+                                       </aura:if>
+                                   </div>    
+                               </div>
+                               <div class="slds-form-element slds-size_1-of-2">
+                                   <aura:if isTrue="{!v.enableMultiSelectPicklist}">
+                                       <ui:inputSelect label="Dependent Question Values" multiple="true" aura:id="DependentQuesPicklistValue" required="true">
+                                           <aura:iteration items="{!v.dependentQuestionPickListValuesList}" var="option">
+                                               <option  value="{!option}">{!option}</option>
+                                           </aura:iteration>
+                                       </ui:inputSelect>
+                                   </aura:if>
+                                    <aura:if isTrue="{!v.enableTextBox}">
+                                   
+                                           <lightning:input type="text" label="Dependent Question Value" name="Filtered PickList Values" aura:id="DependentQuesValue" required="true"/>
+                                      
+                                   </aura:if>
+                                   
+                                   <aura:if isTrue="{!v.picklistForBoolean}">
+                                        <ui:inputSelect label="Dependent Question Values" aura:id="DependentQuesBooleanPicklistValue" required="true">
+                                            <option  value="">--None--</option>
+                                            <aura:iteration items="{!v.picklistValuesForBoolean}" var="option">
+                                               <option  value="{!option}">{!option}</option>
+                                           </aura:iteration>
+                                       </ui:inputSelect>
+                     
+                                   </aura:if>
+                               </div>  
+                           </div>
+                       </div>  
+                   </fieldset>
+                   
+                <fieldset class="slds-form-element">
+                    <div class="slds-form-element__group">
+                        <div class="slds-form-element__row">
+                            <aura:if isTrue="{!v.hideOrShowfilteringPicklistField}">
+                            <div class="slds-form-element slds-size_1-of-2"> 
+                               <ui:inputSelect aura:id="conditionValues"  label="Filtering Values" multiple="true" >
+                                    <option  value="">--None--</option>
+                                    <aura:iteration items="{!v.filteringPicklistValuesList}" var="option">
+                                        <option  value="{!option}">{!option}</option>
+                                    </aura:iteration>
+                                </ui:inputSelect>
+                            </div>
+                            </aura:if>    
+                            <div class="slds-form-element slds-size_1-of-2">
+                                <aura:if isTrue="{!v.preDefaultShowOrHide}">
+                                    <lightning:select name="PreDefault" label="PreDefault" aura:id="preDefault" onchange="{!c.hideOrShowStaticAndCopyValue}" required="true">
+                                        <option  value="">--None--</option>
+                                        <option  value="Static">Static</option>
+                                        <option  value="Copy from Dependent Question">Copy from Dependent Question</option>
+                                        
+                                    </lightning:select>
+                                </aura:if>
+                                 <aura:if isTrue="{!v.mandatoryShowOrHide}">
+                                    <lightning:select name="Mandatory" label="Mandatory" aura:id="Mandatory" required="true">
+                                        <option  value="">--None--</option>
+                                        <option  value="true">true</option>
+                                        <option  value="false">false</option> 
+                                    </lightning:select>
+                                </aura:if>
+                            </div>  
+                        </div>
+                    </div>    
+                </fieldset>
+                   
+                <fieldset class="slds-form-element">
+                    <div class="slds-form-element__group">
+                        <div class="slds-form-element__row">
+                            <div class="slds-form-element slds-size_1-of-2">
+                                <aura:if isTrue="{!v.staticValueField}">
+                                    <lightning:input type="text" label="Static Value" name="Static Value" aura:id="staticValue" required="true"/>
+                                </aura:if>
+                                 <aura:if isTrue="{!v.CopyFromDependentQuestionField}">
+                                    <lightning:input type="text" label="Copy Value" name="Copy Value" aura:id="copyValue" value="{!v.copyQuestionValue}" readonly="true" required="true"/>
+                                </aura:if>
+                            </div>  
+                        </div>
+                    </div>
+                     	<div class="slds-clearfix my-btn">
+                            <div class="slds-float_right">
+                                <lightning:button variant="neutral" label="Add" onclick="{!c.addingConditionsToTable}"/>
+                            </div>
+                        </div>
+                </fieldset>
+            </div>
+                <!-- form end here-->
+                <!--Section header for Table-->
+                <div class="sectionHeader sectionValidations slds-box slds-m-top_small slds-m-bottom_large">
+                    <h1 >Dependent Conditions</h1>
+                 </div>
+                <!--DataTable starts-->
+                <table class="slds-table slds-table_bordered slds-table_cell-buffer">
+                    <thead>
+                        <tr class="slds-text-title_caps">
+                             <th scope="col">
+                                <div class="slds-truncate">ACTION</div>
+                            </th>
+                            <th scope="col">
+                                <div class="slds-truncate">S.No</div>
+                            </th>
+                            <th scope="col">
+                                <div class="slds-truncate" title="Question Name">Question Name</div>
+                            </th>
+                            <th scope="col">
+                                <div class="slds-truncate" title="Operator">Operator</div>
+                            </th>
+                            <th scope="col">
+                                <div class="slds-truncate" title="Value">Value</div>
+                            </th>
+                            <aura:if isTrue="{!v.dependenceType == 'question'}">
+                            <th scope="col">
+                                <div class="slds-truncate" title="Type">Type</div>
+                            </th>
+                            </aura:if>
+                            <th scope="col">
+                                <div class="slds-truncate" title="Condition">Condition</div>
+                            </th>    
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <aura:iteration items="{!v.ConditionList}" var="obj">
+                            <tr>
+                                <td>
+                                    <a href="javascript:void(0);" data-record="{!obj.Id}" data-seq="{!obj.Sequence__c}" onclick="{!c.deleteDepCondition}" tabindex="0" >
+                                        Delete
+                                    </a>
+                                </td>
+                                <td> 
+                                    {!obj.Sequence__c}
+                                </td>
+                                <td scope="row" data-label="Opportunity Name">
+                                    <div class="slds-truncate" title="Question Name">{!obj.Dependent_Question_Name__c}</div>
+                                </td>
+                                <td data-label="Account Name">
+                                    <div class="slds-truncate" title="Operator">{!obj.Conditional_Operaor__c}</div>
+                                </td>
+                                <td data-label="Close Date">
+                                    <div class="slds-truncate" title="Value">{!obj.Condition_Value__c}</div>
+                                </td>
+                                 <aura:if isTrue="{!v.dependenceType == 'question'}">
+                                <td data-label="Close Date">
+                                    <div class="slds-truncate" title="Value">{!obj.Type__c}</div>
+                                </td>
+                                </aura:if>
+                                <td data-label="Prospecting">
+                                    <div class="slds-truncate removeLable" title="Condition" >
+                                        <aura:if isTrue="{!obj.Type__c=='Show or Hide' &amp;&amp; obj.Conditional_Logic__c != null}">
+                                            <aura:if isTrue="{!obj.Type__c=='Show or Hide' &amp;&amp; obj.Conditional_Logic__c != ''}" >
+                                                <lightning:select name="Cond" label="test" aura:id="conditions" value="{!obj.Conditional_Logic__c}" onchange="{!c.updateDependentConditionLogic}">
+                                                    <option  value="">--None--</option>
+                                                    <option  value="AND">AND</option>
+                                                    <option  value="OR">OR</option>  
+                                                </lightning:select>
+                                            </aura:if>
+                                        </aura:if>    
+                                    </div>
+                                </td>   
+                            </tr>
+                        </aura:iteration>    
+                    </tbody>
+                </table><br/>
+                <fieldset class="slds-form-element">
+                    <div class="slds-form-element__group">
+                        <div class="slds-form-element__row">
+                            <div class="slds-form-element slds-size_1-of-2">
+                                <lightning:input type="text" label="Dependent Conditional Logic" name="Column" aura:id="ConditionalColumn" value="{!v.conditionalColumn}"/>
+                            </div>   
+                        </div>
+                    </div>
+                    
+                </fieldset>
+                <!--DataTable ends-->
+                <div name="divBtnsSave" class="footerTab slds-button-group slds-grid slds-grid_align-center slds-border_top slds-p-top_small slds-p-bottom_small" role="group">
+                    <button class="slds-button slds-button_neutral" onclick="{!c.goToPrevious}">Back</button>                           
+                    <button class="slds-button slds-button_brand" onclick="{!c.saveDependentQuestions}">Save</button>
+                </div>   
+            </div>  
+        </div>
+    </div>
+    
+    <div>
+        {!v.body}
+    </div>
+    
+</aura:component>

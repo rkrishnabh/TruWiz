@@ -1,0 +1,36 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+    <aura:attribute name="pickListValues" type="List"/>
+    <aura:attribute name="pickListData" type="string" default=""/>
+    <aura:attribute name="label" type="string" default=""/>
+    <aura:attribute name="value" type="string" default=""/>
+    <aura:attribute name="hasDependency" type="boolean" default=""/>    
+    <aura:attribute name="dependentTab" type="boolean" default=""/>
+    <aura:attribute name="dependentSubtab" type="boolean" default=""/>    
+    <aura:attribute name="dependentQuestion" type="boolean" default=""/>
+     <aura:attribute name="questionId" type="string" default=""/>
+    <aura:handler name="init" value="{!this}" action="{!c.picklistValuesOnLoad}"/>
+     <aura:attribute name="multiSelect" type="Boolean" />
+    <aura:registerEvent name="conditionalDependencyEvent" type="c:conditionalDependencyEvent"/>
+    
+    <div>
+        <div class="slds-grid slds-wrap">
+            <aura:if isTrue="{!v.hasDependency == true}">
+                 <lightning:select aura:id="select"  label="{!v.label}" value="{!v.value}"  onchange="{!c.fireOnChangeEvent}" >
+                     <option value="--None--">--None--</option>
+                     <aura:iteration items="{!v.pickListValues}" var="picklist">
+                   			<option value="{!picklist}">{!picklist}</option>
+                	</aura:iteration> 
+                </lightning:select>
+            <aura:set attribute="else">
+                 <lightning:select aura:id="select"  label="{!v.label}" value="{!v.value}" >
+                     <option value="--None--">--None--</option>
+                     <aura:iteration items="{!v.pickListValues}" var="picklist">
+                   			<option value="{!picklist}">{!picklist}</option>
+                	</aura:iteration> 
+                </lightning:select>
+            </aura:set>
+            </aura:if>                       
+            <ui:outputText class="result" aura:id="multiResult" value="" />
+        </div>
+    </div>    
+</aura:component>

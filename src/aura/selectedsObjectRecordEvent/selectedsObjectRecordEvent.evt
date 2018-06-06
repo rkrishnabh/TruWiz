@@ -1,0 +1,10 @@
+<aura:event type="COMPONENT" description="by this event we are pass the selected sObject(lookup list record) in the parent component">
+    
+    <aura:attribute name="recordByEvent" type="sObject"/>
+    <aura:attribute name="questionId" type="string"/>
+    <aura:attribute name="lookUpId" type="string"/>
+    <aura:attribute name="lookUpName" type="string"/>
+    <aura:attribute name="revisedLookUpValues" type="string"/>
+    <aura:attribute name="revisedSelectedLookUpValues" type="string"/>
+    <aura:attribute name="revisedSelectedLookUpIdValues" type="string"/>
+</aura:event>

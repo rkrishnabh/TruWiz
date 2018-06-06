@@ -1,0 +1,5 @@
+<aura:component >
+    <aura:method name="loadConditionalOperations" action="{!c.loadConditionalOperations}" >
+        <aura:attribute name="callBack" type="function"/>        
+    </aura:method>	
+</aura:component>

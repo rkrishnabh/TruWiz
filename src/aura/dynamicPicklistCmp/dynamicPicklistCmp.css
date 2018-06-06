@@ -1,0 +1,11 @@
+.THIS {
+}
+
+/*Help Text positioning*/
+.THIS .mainQuestionContainer lightning-helptext{
+    order : 1;
+}
+
+.THIS .classPicklistQuestion{
+    width: 97%;
+}

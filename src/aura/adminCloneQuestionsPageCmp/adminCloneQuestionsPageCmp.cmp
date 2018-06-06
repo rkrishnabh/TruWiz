@@ -1,0 +1,81 @@
+<aura:component controller="dynamicWizardAdmin" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global">
+    
+    <!--Start for Navigation-->
+    <aura:attribute name="cmpNavigationList" type="String[]"/>
+    <aura:attribute name="templateId" type="String"/>
+    <aura:attribute name="tabId" type="String"/>
+    <aura:attribute name="tabList" type="String"/>    
+    <aura:attribute name="subTabId" type="String"/>
+    <aura:attribute name="subTabList" type="String"/>
+    <aura:attribute name="userChoice" type="String" default=""/>
+    <aura:attribute name="sfObjectsList" type="getSfObjectsList"/>    
+    <!--End for Navigation-->
+    <aura:attribute name="selectedSubTabId" type="string" />
+    
+    <!--Template Datatable-->
+    <aura:attribute name="templateIdClone" type="string" default=""/>      
+    <aura:attribute name="templateList" type="List" />
+    
+    <!--Tab Details fields-->
+    <aura:attribute name="tabIdClone" type="String"/> 
+    <aura:attribute name="tabListClone" type="List" />
+    
+    <!--Sub Tab Datatable-->
+    <aura:attribute name="subTabs" type="string" default="subTabs"/>
+    <aura:attribute name="subTabIdClone" type="string" />
+    <aura:attribute name="subTabListClone" type="List" />    
+    
+    <!--Questions Datatable-->
+    
+    <aura:attribute name="questions" type="string" default="questions"/>   
+    <aura:attribute name="questionsList" type="List" />
+    <aura:attribute name="questionsColumnsList" type="List" access="public"/>
+    <aura:attribute name="questionsTableConfigurationMap" type="Map" access="public"/>
+    <aura:handler name="dtActionClick" event="ldt:clickedDtAction" action="{!c.actionClicked}"/>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <div class="unhideElement" aura:id="cloneQuestion">    
+        <div class="headerSection slds-p-bottom_small slds-border_bottom">
+            <h2 class="title slds-text-heading--medium slds-text-align_center" id="titleNewTab">Copy Questions</h2>
+        </div>    
+        <div class="contentSection  slds-grid--vertical">
+            <div class="tabDetailsSection slds-grid slds-grid--vertical">                 
+                <div class="slds-box">
+                    <div class="slds-grid slds-size_1-of-1">
+                        <div class="dataTemplates slds-grid slds-size--1-of-3 slds-align_absolute-center">
+                            <lightning:select name="Templates" label="Select a Template:" aura:id="templateListSelect" onchange="{!c.handleTemplateChange}">
+                                <aura:iteration items="{!v.templateList}" var="item">
+                                    <option text="{!item.label}" value="{!item.value}"/>
+                                </aura:iteration>
+                            </lightning:select>                             
+                        </div>
+                        <div class="dataTabs slds-grid slds-size--1-of-3 slds-align_absolute-center">                		
+                            <lightning:select name="Tabs" label="Select a Tab:" aura:id="tabListSelect" onchange="{!c.handleTabChange}">
+                                <aura:iteration items="{!v.tabListClone}" var="item">
+                                    <option text="{!item.label}" value="{!item.value}"/>
+                                </aura:iteration>
+                            </lightning:select>                             
+                        </div>             
+                        <div class="dataSubTabs slds-grid slds-size--1-of-3 slds-align_absolute-center">
+                            <lightning:select name="SubTabs" label="Select a Sub Tab:" aura:id="subTabListSelect" onchange="{!c.handleSubTabChange}">
+                                <aura:iteration items="{!v.subTabListClone}" var="item">
+                                    <option text="{!item.label}" value="{!item.value}"/>
+                                </aura:iteration>
+                            </lightning:select>                             
+                        </div>                    
+                    </div>                
+                </div>
+                <div class="dataQuestions slds-grid">						
+                    <ldt:datatableDev title="Questions" aura:id="questionsListTable" dataRows="{!v.questionsList}" header="{!v.questionsColumnsList}" config="{!v.questionsTableConfigurationMap}"/>                                                 
+                </div>                 
+            </div>
+        </div>         
+        <div name="divBtnsSave" class="slds-button-group slds-grid slds-grid_align-center slds-m-top_small" role="group">
+            <button class="slds-button slds-button_neutral" onclick="{!c.backToEventList}">Back</button> 
+            <button class="slds-button slds-button_neutral" onclick="{!c.save}">Copy</button>                
+        </div>
+    </div>
+    <div>
+        {!v.body}
+    </div>    
+    
+</aura:component>

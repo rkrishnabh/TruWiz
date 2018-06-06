@@ -1,0 +1,89 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+    <aura:attribute name="pickListValues" type="List"/>
+    <aura:attribute name="pickListData" type="string" default=""/>
+    <aura:attribute name="pickListSelectedValue" type="string" default=""/>
+    <aura:attribute name="label" type="string" default=""/>
+    <aura:attribute name="value" type="string" default=""/>
+    <aura:handler name="init" value="{!this}" action="{!c.doinit}"/>
+   <!-- <ui:inputSelect multiple="true" label="{!v.label}" class="dynamic" aura:id="InputSelectMultiple" value="{!v.value}" change="{!c.onMultiSelectChange}">
+    
+        <div class="slds-form-element">
+            
+        <label class="slds-form-element__label" for="combobox-unique-id">{!v.label}</label>
+        <div class="slds-form-element__control">
+            <aura:iteration items="{!v.pickListValues}" var="picklist">
+            <div class="slds-combobox_container slds-size_small">
+                <div class="slds-combobox slds-dropdown-trigger slds-dropdown-trigger_click slds-is-open" aria-expanded="true" aria-haspopup="listbox" role="combobox">
+                    <div class="slds-combobox__form-element slds-input-has-icon slds-input-has-icon_right" role="none">
+                        <input class="slds-input slds-combobox__input" id="combobox-unique-id" aria-activedescendant="listbox-option-unique-id-01" aria-controls="listbox-unique-id" autocomplete="off" role="textbox" placeholder="Select an Option" readonly="readonly" type="text"
+                               />
+                        <span class="slds-icon_container slds-icon-utility-down slds-input__icon slds-input__icon_right" title="Description of icon when needed">
+                            
+                            <span class="slds-assistive-text">Description of icon</span>
+                        </span>
+                    </div>
+                    <div id="listbox-unique-id" role="listbox">
+                        <ul class="slds-listbox slds-listbox_vertical slds-dropdown slds-dropdown_fluid" role="presentation">
+                            <li role="presentation" class="slds-listbox__item">
+                                <span id="listbox-option-unique-id-01" class="slds-media slds-listbox__option slds-listbox__option_plain slds-media_small slds-media_center slds-has-focus" role="option">
+                                    <span class="slds-media__figure">
+                                        
+                                    </span>
+                                    <span class="slds-media__body">
+                                        <span class="slds-truncate" title="Option A"> <option value="{!picklist.value}" >{!picklist}</option></span>
+                                    </span>
+                                </span>
+                            </li>
+                            
+                            <li role="presentation" class="slds-listbox__item">
+                                <span id="listbox-option-unique-id-03" class="slds-media slds-listbox__option slds-listbox__option_plain slds-media_small slds-media_center" role="option">
+                                    <span class="slds-media__figure">
+                                        
+                                    </span>
+                                    <span class="slds-media__body">
+                                        <span class="slds-truncate" title="Option ABCDEFGHIJKLMNOPQRSTUVWXYZ"> Option ABCDEFGHIJKLMNOPQRSTUVWXYZ</span>
+                                    </span>
+                                </span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+                </aura:iteration>
+        </div>
+    
+            </div>
+        
+    </ui:inputSelect>-->
+    <!--<div class="slds-dropdown slds-dropdown__left">-->
+    <div>
+        <div>
+            
+           <ui:inputSelect multiple="true" label="{!v.label}" class="dynamic" aura:id="InputSelectMultiple" value="{!v.value}" change="{!c.onMultiSelectChange}">
+              
+                <aura:iteration items="{!v.pickListValues}" var="picklist">
+                    <option value="{!picklist.value}" >{!picklist}</option>
+                </aura:iteration> 
+            </ui:inputSelect>
+            <ui:outputText class="result" aura:id="multiResult" value="" />
+            
+        </div>
+    </div>
+    <br/>
+    <div aura:id="test1" class="slds-grid">
+        <div class="slds-col slds-p-around_medium" >
+            
+           <!--<ui:inputSelect multiple="true" label="{!v.label}" class="dynamic" aura:id="InputSelectMultipleTest" value="{!v.value}" change="{!c.onMultiSelectChangeTest}">-->
+           <p class="slds-text-heading_medium">{!v.label}</p>
+           <ui:inputSelect multiple="true" class="dynamic" aura:id="InputSelectMultipleTest" value="{!v.value}" change="{!c.onMultiSelectChangeTest}">   
+                <aura:iteration items="{!v.pickListValues}" var="picklist">
+                    <!--<ui:inputSelectOption text="{!picklist.value}" label="{!picklist}"/>-->
+                    <option value="{!picklist.value}" >{!picklist}</option>
+                </aura:iteration> 
+            </ui:inputSelect>
+            <ui:outputText class="result" aura:id="multiResult" value="" />
+            
+        </div>
+    </div>    
+    
+</aura:component>

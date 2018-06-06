@@ -1,0 +1,18 @@
+.THIS {
+}
+
+.THIS .tabsDt{
+    margin-top: 20px;
+    border-radius: .25rem;
+    border: 1px solid #dddbda;
+}
+
+.THIS .tabsTHead{
+padding: .5rem;
+letter-spacing: .0625rem;
+}
+
+.THIS .tabsTd{
+    border-top: 1px solid #d8dde6;
+    padding: .5rem;
+}

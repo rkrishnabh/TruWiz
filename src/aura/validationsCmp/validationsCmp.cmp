@@ -1,0 +1,7 @@
+<aura:component >
+    <aura:method name="validation" action="{!c.validations}" > 
+        <aura:attribute name="errorMessage" type="string" default=""/>
+        <aura:attribute name="questionObject" type="object"  />
+        <aura:attribute name="callBack" type="function" default="" />
+    </aura:method>
+</aura:component>

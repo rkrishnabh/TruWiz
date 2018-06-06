@@ -1,0 +1,35 @@
+.THIS .resizehandle{
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: .25rem;
+    height: 100%;
+    background: none !important;
+    display: block;
+    cursor: col-resize;
+    opacity: 1 !important;
+    z-index: 5000;
+    background: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zd…o8cmVjdCB3aWR0aD0iMSIgaGVpZ2h0PSIxIiBmaWxsPSIjODg4Ij48L3JlY3Q+Cjwvc3ZnPg==)!important;
+    width: 10px!important;
+    height: 22px!important;
+    margin: 0.25em!important;
+    background-size: cover!important;
+    cursor: grab!important;
+    
+}
+.THIS .slds-resizable__handle:active, .THIS .slds-resizable__handle:focusm .THIS .slds-resizable__handle:hover {
+    opacity: 0 !important;
+}
+.THIS .resizedivider{
+    background-size: cover;
+    background: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI1IiBoZWlnaHQ9IjUiPgo8cmVjdCB3aWR0aD0iMSIgaGVpZ2h0PSIxIiBmaWxsPSIjODg4Ij48L3JlY3Q+Cjwvc3ZnPg==")!important;
+    width: 10px!important;
+    height: 35px!important;
+    cursor: grab;
+    cursor: -webkit-grab;
+    margin: 0.5em;
+    position: absolute;
+    right: -7px!important;
+    top: -7px!important;
+    height: 100vh;
+}

@@ -1,0 +1,109 @@
+<aura:component controller="dynamicWizardAdmin" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global">
+    <aura:attribute name="templateObj" type="WizardHeader__c" default="{'sobjectType': 'WizardHeader__c',
+                                                                       'Template_Name__c': '',
+                                                                       'Object_Name__c':'',
+                                                                       'Object_API_Name__c': '',
+                                                                       'Expiry_Date__c':'',
+                                                                       'Active__c':'',  
+                                                                       'Template_Description__c':'',
+                                                                       'tabOrientation__c' : ''
+                                                                       }"/>
+    <aura:attribute name="errorMessage" type="String"/>    
+    <aura:attribute name="cmpNavigationList" type="String[]"/>
+    <aura:attribute name="TabOrientation" type="String"/>
+    <aura:attribute name="TabColor" type="String"/>
+    <aura:attribute name="SubTabColor" type="String"/>
+    <aura:attribute name="QuestionColor" type="String"/>     
+    <aura:attribute name="pathToSet" type="String"/>	    
+    <aura:attribute name="btnSaveOrNext" type="String"/>    
+    <aura:attribute name="templateId" type="String"/>
+    <aura:attribute name="sfObjectsList" type="getSfObjectsList"/>
+    <aura:attribute name="userChoice" type="String" default=""/>
+    <aura:attribute name="copyTemplate" type="String" default=""/>    
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:registerEvent name="pathDataEvnt" type="c:pathDataEvnt"/>   
+    <lightning:spinner variant="brand" size="large" aura:id="spinner"/>   
+    <div name="divTemplateFields" class="slds-m-bottom_medium" >
+        <div class="slds-form slds-form_compound" aura:id="template">
+            
+            <fieldset class="slds-form-element">
+                <div class="slds-form-element__group">
+                    <div class="slds-form-element__row">
+                        <div class="slds-form-element slds-size_1-of-2">
+                            <aura:if isTrue="{!v.copyTemplate}">
+                                <lightning:input type="text" label="Template Name" name="Template Name" value="{!v.templateObj.Template_Name__c}"  required="true"/>
+                                <aura:set attribute="else">
+                                    <lightning:input type="text" label="Template Name" name="Template Name" value="{!v.templateObj.Template_Name__c}"  required="true" aura:id="name"/>
+                                </aura:set>
+                            </aura:if>
+                            
+                        </div>
+                        <div class="slds-form-element slds-size_1-of-2">
+                            <lightning:select aura:id="dynamicObjectName"  label="Object Name" value="{!v.templateObj.Object_API_Name__c}" required="true" onchange="{!c.handleObjectChange}">
+                                <option  value="None">--None--</option>                                        
+                                <aura:iteration items="{!v.sfObjectsList}" var="option">
+                                    <option value="{!option.Name}" selected="{!option.Selected}">{!option.Label}</option>
+                                </aura:iteration>
+                            </lightning:select>
+                        </div>
+                    </div>
+                </div>
+            </fieldset>
+            
+            <fieldset class="slds-form-element">
+                <div class="slds-form-element__group">
+                    <div class="slds-form-element__row">
+                        <div class="slds-form-element slds-size_1-of-2">
+                            <lightning:select label="Tab Orientation" name="Tab Orientation" value="{!v.templateObj.tabOrientation__c}" aura:id="tabOrientation">
+                                <option value="Left">Left</option>
+                                <option value="Right">Right</option>
+                                <option value="Top">Top</option>
+                                <option value="Bottom">Bottom</option>
+                            </lightning:select>	
+                        </div>
+                        <div class="slds-form-element slds-size_1-of-2">
+                            <ui:inputDate label="Expiry Date" value="{!v.templateObj.Expiry_Date__c}"  displayDatePicker="true" format="MM/dd/yyyy" aura:id="expiryDate" required="true"/>
+                        </div>
+                    </div>
+                </div>
+            </fieldset>
+            
+            <fieldset class="slds-form-element">
+                <div class="slds-form-element__group">
+                    <div class="slds-form-element__row">
+                        <div class="slds-form-element slds-size_1-of-2">
+                            <lightning:input type="text" label="Tab Color" name="Tab Color" value="{!v.TabColor}" aura:id="tabColor"/>  									
+                        </div>
+                        <div class="slds-form-element slds-size_1-of-2">
+                            <lightning:input type="text" label="SubTab Color" name="SubTab Color" value="{!v.SubTabColor}" aura:id="subTabColor"/>		
+                        </div>
+                    </div>
+                </div>
+            </fieldset>
+            
+            <fieldset class="slds-form-element">
+                <div class="slds-form-element__group">
+                    <div class="slds-form-element__row">
+                        <div class="slds-form-element slds-size_1-of-2">
+                            <lightning:input type="text" label="Question Color" name="Question Color" value="{!v.QuestionColor}" aura:id="questionColor"/>						
+                        </div>
+                        <div class="slds-form-element slds-size_1-of-2">
+                            <lightning:input type="text" label="Template Description" name="Template Description" value="{!v.templateObj.Template_Description__c}" aura:id="templateDescription"/>
+                        </div>
+                    </div>
+                </div>
+            </fieldset>            
+            
+            <div name="divBtnsSave" class="slds-button-group slds-grid slds-grid_align-center" role="group">
+                <button class="slds-button slds-button_neutral" onclick="{!c.goToPrevious}">Back</button>                 
+                <button class="slds-button slds-button_neutral" onclick="{!c.save}">Save</button>
+                <button class="slds-button slds-button_neutral" onclick="{!c.navigateToTabs}">Save and Next</button>
+            </div>
+        </div>
+    </div>
+    <div>
+        {!v.body}
+    </div>
+    
+</aura:component>

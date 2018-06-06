@@ -1,0 +1,65 @@
+<aura:component controller="dynamicWizardAdmin" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global">
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>   
+    <aura:attribute name="optionList" type="List" default="[
+                                                           {'label': 'New Template', 'value': 'NewTemplate', 'icon': 'standard:goals', 'description':'Create a new Template'},
+                                                           {'label': 'Edit Template', 'value': 'EditTemplate', 'icon': 'standard:event', 'description':'Modify an existing Template'},
+                                                           {'label': 'Copy Template', 'value': 'CopyTemplate', 'icon': 'standard:feed', 'description':'Copy an existing Template'},
+                                                           {'label': 'New Tab', 'value': 'NewTab', 'icon': 'standard:messaging_user', 'description':'Create a new Tab'},
+                                                           {'label': 'New Sub Tab', 'value': 'NewSubTab', 'icon': 'standard:record', 'description':'Create a new Sub Tab'},
+                                                           {'label': 'New Question', 'value': 'NewQuestion', 'icon': 'standard:timeslot', 'description':'Create a new Question'},                                                           
+                                                           {'label': 'Add Gifts', 'value': 'AddGifts', 'icon': 'standard:thanks', 'description':'Add Gifts'},
+                                                           {'label': 'Add Help Text', 'value': 'AddHelpText', 'icon': 'standard:live_chat', 'description':'Add Help Text'}                                                           
+                                                        ]"/> 
+    
+    <aura:attribute name="userChoice" type="String" default=""/>
+    <aura:attribute name="sfObjectsList" type="getSfObjectsList"/>    
+    <aura:attribute name="cmpNavigationList" default="['c:adminHomePageCmp']" type="String[]"/> 
+    <lightning:spinner variant="brand" size="large" aura:id="spinner" class="slds-hide"/>
+    
+    <!-- Page Header Starts-->
+    <div class="slds-page-header" >
+        <div class="slds-media">
+            <div class="slds-media__figure">
+                <span class="slds-icon_container slds-icon-standard-opportunity" title="Description of icon when needed">
+                     <lightning:icon iconName="custom:custom51" size="medium" alternativeText="Indicates approval"/>
+                </span>
+            </div>
+            <div class="slds-media__body">
+                <div class="slds-grid">
+                    <div class="slds-col">
+                        <h1 class="slds-page-header__title slds-truncate slds-align-middle" title="Admin - Services">Wizard Admin Services</h1>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Page Header Ends-->    
+    
+    <div class="greetMsg">Hey welcome, what’s on your mind today?</div>
+    
+    <!--Tiles Design Start-->   
+    <div aura:id="optionsContainer" class="optionsContainer">
+        <lightning:layout horizontalAlign="space" multipleRows="true">        
+        <aura:iteration items="{!v.optionList}" var="option">
+            <lightning:layoutItem aura:id="itemOpt" class="optionLayoutItem" size="3" mediumDeviceSize="4" flexibility="auto">
+                    <div>
+						<a class="anchorStyle slds-grid tileUiBlock slds-m-around_small slds-box uiBlock" href="" data-val="{!option.value}" onclick="{!c.navigateAction}">
+							<div class="bLeft slds-align_absolute-center">
+								<div class="appImage slds-p-around_small">
+									<span class="uiImage" data-aura-class="uiImage">										
+										<lightning:icon class="optionIcon" iconName="{!option.icon}" size="large" alternativeText="Indicates approval"/>
+									</span>
+								</div>
+							</div>
+							<div class="bRight">
+								<div class="appTileTitle" title="{!option.label}">{!option.label}</div>
+                                <div class="fullDescription" id="fullDescription">{!option.description}</div>  
+							</div>
+						</a>                         
+                    </div>
+            </lightning:layoutItem>
+        </aura:iteration>           
+        </lightning:layout>
+    </div>
+    <!--Tiles Design End-->    
+</aura:component>
